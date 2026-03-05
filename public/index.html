@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>atom</title>
+    <title>atom | 2006 🫧</title>
     
     <script src="/uv/uv.bundle.js"></script>
     <script src="/uv/uv.config.js"></script>
@@ -17,118 +17,128 @@
 
     <style>
         :root {
-            --glass: rgba(255, 255, 255, 0.15);
-            --border: rgba(255, 255, 255, 0.2);
+            --gloss: rgba(255, 255, 255, 0.4);
+            --aero-blue: #00d2ff;
+            --aero-green: #3aeb3a;
         }
 
         body, html {
             margin: 0; padding: 0; height: 100%;
-            /* ios 26 inspired mesh gradient */
-            background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 30%, #a1c4fd 70%, #c2e9fb 100%);
-            background-size: 400% 400%;
-            animation: flow 15s ease infinite;
-            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", sans-serif;
+            /* frutiger aero "aurora" background */
+            background: linear-gradient(180deg, #4facfe 0%, #00f2fe 30%, #ffffff 60%, #3aeb3a 100%);
+            font-family: 'Segoe UI', 'Lucida Grande', sans-serif;
             display: flex; align-items: center; justify-content: center;
             overflow: hidden;
         }
 
-        @keyframes flow { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
-
-        .ios-container {
-            background: var(--glass);
-            backdrop-filter: blur(40px) saturate(180%);
-            -webkit-backdrop-filter: blur(40px) saturate(180%);
-            border: 1px solid var(--border);
-            border-radius: 45px;
-            padding: 50px 40px;
-            width: 360px;
+        /* glossy bubble container */
+        .glass-orb {
+            background: var(--gloss);
+            backdrop-filter: blur(25px) saturate(180%);
+            -webkit-backdrop-filter: blur(25px) saturate(180%);
+            border: 2px solid rgba(255, 255, 255, 0.7);
+            border-radius: 60px;
+            padding: 50px;
+            width: 380px;
             text-align: center;
-            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.1);
-            transform: scale(0.95);
-            animation: popIn 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            box-shadow: 
+                0 30px 60px rgba(0,0,0,0.1),
+                inset 0 10px 20px rgba(255,255,255,0.8),
+                inset 0 -10px 20px rgba(0,0,0,0.05);
+            position: relative;
         }
-
-        @keyframes popIn { to { transform: scale(1); opacity: 1; } }
 
         h1 {
-            font-weight: 800; font-size: 3.2rem; margin: 0 0 5px;
-            color: rgba(255,255,255,0.95); letter-spacing: -2px;
+            font-size: 3.5rem; margin: 0;
+            font-weight: 300; letter-spacing: -3px;
+            background: linear-gradient(to bottom, #2e7d32, #0277bd);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 2px 2px rgba(255,255,255,1));
         }
 
-        p { color: rgba(255,255,255,0.6); font-size: 0.9rem; margin-bottom: 30px; font-weight: 500; }
-
-        .search-pill {
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid var(--border);
-            border-radius: 25px;
-            display: flex; padding: 10px 15px; margin-bottom: 15px;
-        }
+        .subtitle { font-size: 0.8rem; color: #555; margin-bottom: 30px; letter-spacing: 2px; text-transform: uppercase; font-weight: 700; }
 
         input {
-            flex: 1; background: transparent; border: none; outline: none;
-            color: white; font-size: 1rem; padding: 10px; font-weight: 500;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.8);
+            border: 2px solid #fff;
+            padding: 15px 20px;
+            border-radius: 30px;
+            font-size: 1rem;
+            outline: none;
+            box-sizing: border-box;
+            margin-bottom: 15px;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);
         }
-        input::placeholder { color: rgba(255, 255, 255, 0.4); }
 
-        .btn-stack { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .button-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
 
+        /* glossy skeuomorphic buttons */
         button {
-            padding: 15px; border-radius: 20px; border: none; font-weight: 700;
-            cursor: pointer; font-size: 0.95rem; transition: 0.3s;
+            padding: 15px; border-radius: 25px; border: none; font-weight: 800;
+            cursor: pointer; font-size: 1rem; transition: 0.2s;
+            color: white; text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+            position: relative; overflow: hidden;
         }
 
-        .btn-rbx { background: white; color: black; box-shadow: 0 10px 20px rgba(255,255,255,0.2); }
-        .btn-go { background: rgba(0,0,0,0.2); color: white; border: 1px solid var(--border); }
-
-        button:hover { transform: scale(1.05); opacity: 0.9; }
-
-        /* hidden viewport */
-        #viewport {
-            position: fixed; inset: 0; display: none; background: black; z-index: 1000;
-            animation: slideUp 0.5s ease-out;
+        button::after {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 50%;
+            background: linear-gradient(to bottom, rgba(255,255,255,0.4), transparent);
         }
-        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
 
+        .btn-roblox { 
+            background: linear-gradient(to bottom, #a2ff00, #4caf50); 
+            box-shadow: 0 5px 0 #2e7d32, 0 10px 20px rgba(76,175,80,0.4);
+        }
+        .btn-launch { 
+            background: linear-gradient(to bottom, #00d2ff, #3a7bd5); 
+            box-shadow: 0 5px 0 #0277bd, 0 10px 20px rgba(58,123,213,0.4);
+        }
+
+        button:active { transform: translateY(4px); box-shadow: 0 1px 0 #222; }
+
+        /* full-view portal */
+        #portal {
+            position: fixed; inset: 0; display: none; background: #fff; z-index: 1000;
+        }
         iframe { width: 100%; height: 100%; border: none; }
-        .exit-pill {
-            position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%);
-            background: rgba(255,255,255,0.2); backdrop-filter: blur(20px);
-            border: 1px solid rgba(255,255,255,0.3); color: white;
-            padding: 12px 30px; border-radius: 30px; font-weight: 600; cursor: pointer;
+        .back-pill {
+            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+            background: rgba(255,255,255,0.5); backdrop-filter: blur(10px);
+            border: 1px solid #fff; padding: 10px 30px; border-radius: 50px;
+            font-weight: 700; cursor: pointer; color: #333;
         }
     </style>
 </head>
 <body>
 
-    <div class="ios-container">
+    <div class="glass-orb">
         <h1>atom</h1>
-        <p>explore the nebula</p>
+        <div class="subtitle">system software v2.0</div>
         
-        <div class="search-pill">
-            <input type="text" id="urlInput" placeholder="search or enter url...">
-        </div>
+        <input type="text" id="userInput" placeholder="search the web or coordinates...">
 
-        <div class="btn-stack">
-            <button class="btn-rbx" onclick="openNode('https://now-gg.com/apps/roblox-corporation/5349/roblox.html')">roblox</button>
-            <button class="btn-go" onclick="openNode(document.getElementById('urlInput').value)">launch</button>
+        <div class="button-row">
+            <button class="btn-roblox" onclick="blastOff('https://maddoxcloud.com/')">roblox</button>
+            <button class="btn-launch" onclick="blastOff(document.getElementById('userInput').value)">search</button>
         </div>
     </div>
 
-    <div id="viewport">
-        <iframe id="mainFrame"></iframe>
-        <button class="exit-pill" onclick="closeNode()">close session</button>
+    <div id="portal">
+        <iframe id="uvFrame"></iframe>
+        <button class="back-pill" onclick="closePortal()">← return home</button>
     </div>
 
     <script>
-        const frame = document.getElementById('mainFrame');
-        const view = document.getElementById('viewport');
-        const input = document.getElementById('urlInput');
+        const frame = document.getElementById('uvFrame');
+        const view = document.getElementById('portal');
+        const input = document.getElementById('userInput');
 
-        function openNode(val) {
+        function blastOff(val) {
             let url = val.trim();
             if (!url) return;
 
-            // if it's a search term, use brave (google hates proxies)
             if (!url.includes('.')) {
                 url = 'https://search.brave.com/search?q=' + encodeURIComponent(url);
             } else if (!url.startsWith('http')) {
@@ -139,12 +149,12 @@
             view.style.display = 'block';
         }
 
-        function closeNode() {
+        function closePortal() {
             view.style.display = 'none';
             frame.src = 'about:blank';
         }
 
-        input.onkeydown = (e) => { if (e.key === 'Enter') openNode(input.value); };
+        input.onkeydown = (e) => { if (e.key === 'Enter') blastOff(input.value); };
     </script>
 </body>
 </html>
