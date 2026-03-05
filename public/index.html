@@ -19,113 +19,120 @@
         body {
             margin: 0;
             height: 100vh;
-            background: #050208;
-            background-image: radial-gradient(circle at center, #1a0b2e 0%, #050208 100%);
-            font-family: ui-sans-serif, system-ui, sans-serif;
+            /* that classic frutiger aero sky-to-grass gradient */
+            background: linear-gradient(180deg, #74ebd5 0%, #9face6 100%);
+            font-family: 'Segoe UI', Tahoma, sans-serif;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: white;
             overflow: hidden;
         }
 
-        .glass {
-            background: rgba(255, 255, 255, 0.02);
-            backdrop-filter: blur(30px);
-            -webkit-backdrop-filter: blur(30px);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 40px;
+        .bubble {
+            background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 2px solid rgba(255, 255, 255, 0.6);
+            border-radius: 50px;
             padding: 40px;
-            width: 340px;
+            width: 320px;
             text-align: center;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1), inset 0 0 15px rgba(255, 255, 255, 0.5);
         }
 
         h1 {
-            font-size: 2.5rem;
+            color: #fff;
+            font-size: 2.8rem;
             margin: 0 0 20px;
-            font-weight: 800;
-            letter-spacing: -2px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            font-weight: 300;
         }
 
         input {
             width: 100%;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 15px 20px;
-            border-radius: 15px;
-            color: white;
+            background: rgba(255, 255, 255, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            padding: 12px 20px;
+            border-radius: 25px;
             font-size: 1rem;
             outline: none;
             box-sizing: border-box;
-            margin-bottom: 12px;
+            margin-bottom: 15px;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
         }
 
         .btns {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
+            display: flex;
             gap: 10px;
         }
 
         button {
-            padding: 14px;
-            border-radius: 14px;
+            flex: 1;
+            padding: 12px;
+            border-radius: 20px;
             border: none;
-            font-weight: 700;
+            font-weight: 600;
             cursor: pointer;
             transition: 0.2s;
+            /* glossy button effect */
+            background: linear-gradient(to bottom, #ffffff 0%, #e0e0e0 100%);
+            box-shadow: 0 4px 0 #bcbcbc, 0 5px 10px rgba(0,0,0,0.1);
+            color: #444;
         }
 
-        .rbx { background: #fff; color: #000; }
-        .srch { background: rgba(255, 255, 255, 0.1); color: #fff; }
+        button.rbx {
+            background: linear-gradient(to bottom, #a1ffce 0%, #faffd1 100%);
+            box-shadow: 0 4px 0 #86d6af, 0 5px 10px rgba(0,0,0,0.1);
+        }
 
-        button:hover { opacity: 0.8; transform: scale(0.98); }
+        button:active {
+            transform: translateY(3px);
+            box-shadow: 0 1px 0 #bcbcbc;
+        }
 
-        #view {
+        #vp {
             position: fixed;
             inset: 0;
             display: none;
-            background: #000;
+            background: white;
             z-index: 1000;
         }
 
         iframe { width: 100%; height: 100%; border: none; }
 
-        .x {
+        .close {
             position: fixed;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            color: white;
-            padding: 10px 25px;
-            border-radius: 100px;
+            top: 20px;
+            right: 20px;
+            background: rgba(255,255,255,0.8);
+            border: 1px solid #ccc;
+            padding: 8px 15px;
+            border-radius: 15px;
             cursor: pointer;
-            backdrop-filter: blur(10px);
+            font-weight: bold;
         }
     </style>
 </head>
 <body>
 
-    <div class="glass">
-        <h1>atom</h1>
-        <input type="text" id="i" placeholder="search or url...">
+    <div class="bubble">
+        <h1>atom 🫧</h1>
+        <input type="text" id="url" placeholder="search or go...">
         <div class="btns">
             <button class="rbx" onclick="go('https://education-edition.github.io/roblox/')">roblox</button>
-            <button class="srch" onclick="go(document.getElementById('i').value)">launch</button>
+            <button onclick="go(document.getElementById('url').value)">launch</button>
         </div>
     </div>
 
-    <div id="view">
-        <iframe id="f"></iframe>
-        <button class="x" onclick="kill()">exit</button>
+    <div id="vp">
+        <iframe id="ifr"></iframe>
+        <button class="close" onclick="exit()">back 🍃</button>
     </div>
 
     <script>
-        const f = document.getElementById('f');
-        const v = document.getElementById('view');
-        const i = document.getElementById('i');
+        const ifr = document.getElementById('ifr');
+        const vp = document.getElementById('vp');
+        const inp = document.getElementById('url');
 
         function go(val) {
             let u = val.trim();
@@ -137,16 +144,16 @@
                 u = 'https://' + u;
             }
 
-            f.src = __uv$config.prefix + __uv$config.encodeUrl(u);
-            v.style.display = 'block';
+            ifr.src = __uv$config.prefix + __uv$config.encodeUrl(u);
+            vp.style.display = 'block';
         }
 
-        function kill() {
-            v.style.display = 'none';
-            f.src = 'about:blank';
+        function exit() {
+            vp.style.display = 'none';
+            ifr.src = 'about:blank';
         }
 
-        i.onkeydown = (e) => { if (e.key === 'Enter') go(i.value); };
+        inp.onkeydown = (e) => { if (e.key === 'Enter') go(inp.value); };
     </script>
 </body>
 </html>
