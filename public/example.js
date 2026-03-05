@@ -1,25 +1,33 @@
-document // makes it so you can press enter to submit as opposed to just being able to press a button
-    .getElementById("urlInput")
-    .addEventListener("keydown", function (event) {
-        if (event.key === "Enter") {
-            event.preventDefault();
-            document.getElementById("searchButton").click();
-        }
-    });
+// grabbing the elements once so we don't have to keep searching the DOM
+const urlInput = document.getElementById("urlInput");
+const searchBtn = document.getElementById("searchButton");
+const iframeWindow = document.getElementById("iframeWindow");
 
-document.getElementById("searchButton").onclick = function (event) {
-    event.preventDefault();
+// let them hit enter without the drama
+urlInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+        e.preventDefault();
+        searchBtn.click();
+    }
+});
 
-    let url = document.getElementById("urlInput").value; // if no periods are detected in the input, search google instead
-    let searchUrl = "https://www.google.com/search?q=";
+searchBtn.onclick = (e) => {
+    e.preventDefault();
 
-    if (!url.includes(".")) {
-        url = searchUrl + encodeURIComponent(url);
+    let inputVal = urlInput.value.trim();
+    if (!inputVal) return; // don't go nowhere if the input is empty lol
+
+    let finalUrl;
+
+    // if there's no dot, it's a vibe check (google search)
+    if (!inputVal.includes(".")) {
+        finalUrl = `https://www.google.com/search?q=${encodeURIComponent(inputVal)}`;
     } else {
-        if (!url.startsWith("http://") && !url.startsWith("https://")) { // if no http or https is detected, add https automatically
-            url = "https://" + url;
-        }
+        // if they forgot the protocol, we got them covered 🛡️
+        finalUrl = inputVal.match(/^https?:\/\//) ? inputVal : `https://${inputVal}`;
     }
 
-    iframeWindow.src = __uv$config.prefix + __uv$config.encodeUrl(url);
+    // sending it through the ultraviolet portal 🌌
+    console.log(`🚀 blasting off to: ${finalUrl}`);
+    iframeWindow.src = __uv$config.prefix + __uv$config.encodeUrl(finalUrl);
 };
