@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>atom | aero</title>
+    <title>atom os | aero</title>
     
+    <!-- uv proxy scripts -->
     <script src="/uv/uv.bundle.js"></script>
     <script src="/uv/uv.config.js"></script>
     <script>
@@ -19,263 +20,343 @@
         @import url('https://fonts.googleapis.com/css2?family=Segoe+UI:wght@300;400;600&display=swap');
 
         :root {
-            --glass-white: rgba(255, 255, 255, 0.45);
-            --glass-border: rgba(255, 255, 255, 0.75);
-            --aero-shadow: 0 15px 35px rgba(0, 80, 150, 0.15);
-            --text-main: #2a4b60;
+            --glass: rgba(240, 250, 255, 0.65);
+            --glass-border: rgba(255, 255, 255, 0.8);
+            --taskbar: linear-gradient(180deg, rgba(255,255,255,0.9) 0%, rgba(200,225,255,0.9) 100%);
+            --aero-blue: #23a6d5;
+            --aero-green: #23d5ab;
         }
 
-        body, html {
-            margin: 0; padding: 0; height: 100%; width: 100%;
-            overflow: hidden;
+        * { box-sizing: border-box; user-select: none; }
+
+        body {
+            margin: 0; padding: 0; height: 100vh; overflow: hidden;
             font-family: 'Segoe UI', sans-serif;
-            color: var(--text-main);
+            background: linear-gradient(-45deg, #0099ff, #ffffff, #23d5ab);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            cursor: default;
         }
 
-        /* the frutiger aero landscape */
-        .scenery {
-            position: absolute; inset: 0; z-index: -2;
-            background: linear-gradient(180deg, #87CEFA 0%, #E0F7FA 45%, #ffffff 50%, #76d338 50%, #4caf50 100%);
-            background-size: 100% 200%;
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
 
-        /* dynamic aurora/shine overlay */
-        .shine {
-            position: absolute; inset: 0; z-index: -1;
-            background: radial-gradient(circle at 50% 0%, rgba(255,255,255,0.8), transparent 70%);
-            animation: breathe 8s ease-in-out infinite;
+        /* desktop icons grid */
+        .desktop {
+            padding: 20px;
+            display: flex; flex-direction: column; gap: 20px; flex-wrap: wrap;
+            height: calc(100% - 50px); align-content: flex-start;
         }
 
-        @keyframes breathe {
-            0%, 100% { opacity: 0.6; }
-            50% { opacity: 1; }
+        .icon {
+            width: 80px; display: flex; flex-direction: column; align-items: center;
+            cursor: pointer; transition: 0.2s;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.4);
+            color: white;
         }
+        .icon:hover { transform: scale(1.05); }
+        .icon:active { transform: scale(0.95); opacity: 0.8; }
 
-        /* floating bubbles */
-        .bubble-container { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
-        .bubble {
-            position: absolute;
-            background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.9), rgba(255,255,255,0.1));
-            border: 1px solid rgba(255,255,255,0.5);
-            border-radius: 50%;
-            box-shadow: inset 0 0 10px rgba(255,255,255,0.5), 0 5px 15px rgba(0,0,0,0.05);
-            animation: rise linear infinite;
-        }
-        @keyframes rise {
-            0% { transform: translateY(120vh) scale(1); opacity: 0; }
-            20% { opacity: 0.8; }
-            80% { opacity: 0.8; }
-            100% { transform: translateY(-20vh) scale(1.2); opacity: 0; }
-        }
-
-        /* main window container */
-        .window {
-            position: relative;
-            width: 440px;
-            background: linear-gradient(160deg, rgba(255,255,255,0.8), rgba(255,255,255,0.4));
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 2px solid var(--glass-border);
-            border-radius: 20px;
-            padding: 40px;
-            box-shadow: var(--aero-shadow), inset 0 1px 0 rgba(255,255,255,0.9);
-            display: flex; flex-direction: column; align-items: center;
-            animation: floatOpen 1s cubic-bezier(0.2, 0.9, 0.3, 1) forwards;
-            top: 50px; /* Slight offset for aesthetic */
-        }
-
-        @keyframes floatOpen {
-            from { transform: translateY(50px) scale(0.95); opacity: 0; }
-            to { transform: translateY(0) scale(1); opacity: 1; }
-        }
-
-        /* glossy highlight header */
-        .window::before {
-            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 140px;
-            background: linear-gradient(180deg, rgba(255,255,255,0.7) 0%, rgba(255,255,255,0) 100%);
-            border-radius: 18px 18px 60% 60% / 18px 18px 30px 30px;
-            pointer-events: none;
-        }
-
-        h1 {
-            font-size: 3.8rem; margin: 0;
-            font-weight: 300; letter-spacing: -2px;
-            background: linear-gradient(180deg, #00a8ff 0%, #0077cc 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            filter: drop-shadow(0 2px 0 rgba(255,255,255,0.5));
-            position: relative;
-        }
-
-        .status {
-            margin-top: -5px; margin-bottom: 30px;
-            font-size: 0.9rem; color: #666; font-weight: 600;
-            text-shadow: 0 1px 0 rgba(255,255,255,0.8);
-            display: flex; gap: 8px; align-items: center;
+        .icon-img {
+            width: 48px; height: 48px;
+            background: linear-gradient(180deg, #ffffff 0%, #cceeff 100%);
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 24px; border: 1px solid rgba(255,255,255,0.6);
+            position: relative; overflow: hidden;
         }
         
-        .orb {
-            width: 10px; height: 10px; background: #3aeb3a;
-            border-radius: 50%; box-shadow: 0 0 5px #3aeb3a;
-        }
-
-        input {
-            width: 100%; box-sizing: border-box;
-            padding: 15px 20px; border-radius: 25px;
-            border: 1px solid #aaccdd;
-            background: rgba(255,255,255,0.8);
-            font-size: 1rem; color: #444; font-family: 'Segoe UI', sans-serif;
-            outline: none; margin-bottom: 20px;
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
-            transition: 0.3s;
-        }
-        input:focus {
-            background: #fff;
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.05), 0 0 15px rgba(0, 168, 255, 0.4);
-            border-color: #55bbff;
-        }
-
-        .buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; width: 100%; }
-
-        button {
-            padding: 15px; border: 1px solid rgba(255,255,255,0.8);
-            border-radius: 20px; font-size: 1rem; font-weight: 600;
-            cursor: pointer; color: white;
-            text-shadow: 0 1px 1px rgba(0,0,0,0.2);
-            position: relative; overflow: hidden;
-            transition: 0.2s;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.6);
-        }
-
-        /* glass gloss overlay on buttons */
-        button::after {
+        /* icon gloss */
+        .icon-img::after {
             content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 50%;
-            background: linear-gradient(to bottom, rgba(255,255,255,0.7), rgba(255,255,255,0.1));
-            border-radius: 18px 18px 40% 40%;
+            background: linear-gradient(to bottom, rgba(255,255,255,0.8), transparent);
         }
 
-        .btn-green { background: linear-gradient(180deg, #8cd155 0%, #5aad24 100%); }
-        .btn-green:hover { box-shadow: 0 6px 12px rgba(90, 173, 36, 0.3); transform: translateY(-1px); }
+        .icon-label { margin-top: 8px; font-size: 0.85rem; text-align: center; font-weight: 500; }
 
-        .btn-blue { background: linear-gradient(180deg, #6ecaff 0%, #299ae0 100%); }
-        .btn-blue:hover { box-shadow: 0 6px 12px rgba(41, 154, 224, 0.3); transform: translateY(-1px); }
-
-        /* iframe portal */
-        .portal {
-            position: fixed; inset: 0; z-index: 100;
-            background: #eef5f9;
-            opacity: 0; pointer-events: none;
-            transition: opacity 0.5s ease;
+        /* window system */
+        .window {
+            position: absolute; top: 10%; left: 15%;
+            width: 800px; height: 500px;
+            background: var(--glass);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.9);
             display: flex; flex-direction: column;
+            opacity: 0; transform: scale(0.95);
+            transition: opacity 0.2s, transform 0.2s;
+            pointer-events: none; visibility: hidden;
+            z-index: 10; resize: both; overflow: hidden;
         }
-        .portal.active { opacity: 1; pointer-events: auto; }
 
-        .toolbar {
-            height: 40px; background: linear-gradient(180deg, #ddeef9 0%, #b8d6ed 100%);
-            border-bottom: 1px solid #99b6cc;
+        .window.active {
+            opacity: 1; transform: scale(1);
+            pointer-events: auto; visibility: visible;
+        }
+
+        .title-bar {
+            height: 35px;
+            background: linear-gradient(180deg, rgba(255,255,255,0.8) 0%, rgba(230,240,255,0.5) 100%);
+            border-bottom: 1px solid rgba(255,255,255,0.5);
             display: flex; align-items: center; justify-content: space-between;
-            padding: 0 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            padding: 0 10px; cursor: move;
         }
 
-        .toolbar-text { font-size: 0.85rem; color: #556677; }
+        .win-title { font-size: 0.85rem; color: #445566; font-weight: 600; text-transform: lowercase; }
 
-        .close-pill {
-            background: linear-gradient(180deg, #ff9999 0%, #dd5555 100%);
-            border: 1px solid #cc4444; color: white;
-            padding: 4px 15px; border-radius: 10px; font-size: 0.75rem;
-            cursor: pointer; text-shadow: 0 1px 0 rgba(0,0,0,0.2);
+        .win-controls { display: flex; gap: 6px; }
+        .win-btn {
+            width: 12px; height: 12px; border-radius: 50%;
+            border: 1px solid rgba(0,0,0,0.1); cursor: pointer;
+        }
+        .close-btn { background: #ff5f56; }
+        .min-btn { background: #ffbd2e; }
+        .max-btn { background: #27c93f; }
+
+        .window-content { flex: 1; position: relative; background: rgba(255,255,255,0.5); }
+        iframe { width: 100%; height: 100%; border: none; }
+
+        /* taskbar */
+        .taskbar {
+            position: absolute; bottom: 0; width: 100%; height: 45px;
+            background: var(--taskbar);
+            border-top: 1px solid rgba(255,255,255,0.6);
+            display: flex; align-items: center; padding: 0 10px; gap: 10px;
+            backdrop-filter: blur(10px); z-index: 1000;
         }
 
-        iframe { flex: 1; border: none; width: 100%; background: #fff; }
+        .start-btn {
+            width: 35px; height: 35px;
+            background: radial-gradient(circle at 50% 50%, #00d2ff 0%, #0077ff 100%);
+            border-radius: 50%; border: 2px solid white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            cursor: pointer; transition: 0.2s;
+        }
+        .start-btn:hover { filter: brightness(1.2); box-shadow: 0 0 10px #00d2ff; }
+
+        .task-item {
+            padding: 5px 15px; background: rgba(255,255,255,0.4);
+            border-radius: 6px; font-size: 0.8rem; color: #333;
+            cursor: pointer; border: 1px solid transparent;
+        }
+        .task-item:hover { background: rgba(255,255,255,0.7); border-color: #fff; }
+
+        .clock { margin-left: auto; color: #333; font-size: 0.85rem; padding-right: 10px; }
+
+        /* specific app styling */
+        .browser-bar {
+            padding: 8px; display: flex; gap: 10px;
+            background: #f0f5f9; border-bottom: 1px solid #dceef7;
+        }
+        .url-input {
+            flex: 1; padding: 6px 12px; border-radius: 15px;
+            border: 1px solid #bdc7d0; outline: none;
+            font-size: 0.9rem; color: #444;
+        }
+
+        .app-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+            padding: 20px; gap: 20px;
+        }
+        .app-card {
+            background: rgba(255,255,255,0.6);
+            border-radius: 10px; padding: 10px;
+            text-align: center; cursor: pointer;
+            transition: 0.2s; border: 1px solid transparent;
+        }
+        .app-card:hover { background: #fff; transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
 
     </style>
 </head>
 <body>
 
-    <div class="scenery"></div>
-    <div class="shine"></div>
-    <div class="bubble-container" id="bubbles"></div>
-
-    <div class="window">
-        <h1>atom</h1>
-        <div class="status"><div class="orb"></div> ready to browse</div>
-        
-        <input type="text" id="userInput" placeholder="search brave or enter url...">
-
-        <div class="buttons">
-            <!-- Updated to EasyFun.gg which is currently better than now.gg for unblocked access -->
-            <button class="btn-green" onclick="launch('https://www.easyfun.gg/games/roblox.html')">roblox (cloud)</button>
-            <button class="btn-blue" onclick="launch(document.getElementById('userInput').value)">launch</button>
+    <!-- Desktop Icons -->
+    <div class="desktop">
+        <div class="icon" onclick="openWindow('browser')">
+            <div class="icon-img">🌐</div>
+            <div class="icon-label">net</div>
         </div>
-        
-        <div style="margin-top: 20px; font-size: 0.75rem; color: #8899aa;">
-            v2.5 frutiger edition
+        <div class="icon" onclick="launchRoblox()">
+            <div class="icon-img" style="background: linear-gradient(180deg, #ff6b6b 0%, #ee0000 100%);">R</div>
+            <div class="icon-label">roblox</div>
+        </div>
+        <div class="icon" onclick="openWindow('library')">
+            <div class="icon-img" style="background: linear-gradient(180deg, #aaddaa 0%, #55aa55 100%);">🎮</div>
+            <div class="icon-label">library</div>
+        </div>
+        <div class="icon" onclick="alert('vibes are currently optimized.')">
+            <div class="icon-img" style="background: linear-gradient(180deg, #ddccff 0%, #8855ff 100%);">⚙️</div>
+            <div class="icon-label">vibes</div>
         </div>
     </div>
 
-    <div class="portal" id="portalView">
-        <div class="toolbar">
-            <span class="toolbar-text">atom browser session</span>
-            <div class="close-pill" onclick="closePortal()">close window</div>
+    <!-- Browser Window -->
+    <div class="window" id="win-browser">
+        <div class="title-bar" onmousedown="startDrag(event, 'win-browser')">
+            <div class="win-title">atom browser</div>
+            <div class="win-controls">
+                <div class="win-btn min-btn"></div>
+                <div class="win-btn max-btn"></div>
+                <div class="win-btn close-btn" onclick="closeWindow('browser')"></div>
+            </div>
         </div>
-        <iframe id="uvFrame"></iframe>
+        <div class="window-content" style="display:flex; flex-direction:column;">
+            <div class="browser-bar">
+                <input type="text" class="url-input" id="url-bar" placeholder="search brave or enter url..." onkeydown="if(event.key==='Enter') navigate(this.value)">
+            </div>
+            <iframe id="browser-frame" src="about:blank"></iframe>
+        </div>
+    </div>
+
+    <!-- Games Library Window -->
+    <div class="window" id="win-library" style="width: 600px; height: 400px; left: 30%; top: 20%;">
+        <div class="title-bar" onmousedown="startDrag(event, 'win-library')">
+            <div class="win-title">app library</div>
+            <div class="win-controls">
+                <div class="win-btn close-btn" onclick="closeWindow('library')"></div>
+            </div>
+        </div>
+        <div class="window-content" style="overflow-y: auto;">
+            <div class="app-grid">
+                <div class="app-card" onclick="launchRoblox()">
+                    <div style="font-size:30px">🟥</div>
+                    <div style="font-size:0.8rem; margin-top:5px;">roblox</div>
+                </div>
+                <div class="app-card" onclick="openGame('https://minecraft.js.org')">
+                    <div style="font-size:30px">🟩</div>
+                    <div style="font-size:0.8rem; margin-top:5px;">minecraft</div>
+                </div>
+                <div class="app-card" onclick="openGame('https://poki.com')">
+                    <div style="font-size:30px">🕹️</div>
+                    <div style="font-size:0.8rem; margin-top:5px;">poki</div>
+                </div>
+                <div class="app-card" onclick="openGame('https://discord.com/app')">
+                    <div style="font-size:30px">💬</div>
+                    <div style="font-size:0.8rem; margin-top:5px;">discord</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Taskbar -->
+    <div class="taskbar">
+        <div class="start-btn" onclick="toggleMenu()"></div>
+        <div class="task-item" onclick="openWindow('browser')">atom browser</div>
+        <div class="clock" id="clock">12:00</div>
     </div>
 
     <script>
-        // bubble physics
-        const bubbleBox = document.getElementById('bubbles');
-        function createBubble() {
-            const b = document.createElement('div');
-            b.className = 'bubble';
-            const size = Math.random() * 60 + 20;
-            b.style.width = size + 'px';
-            b.style.height = size + 'px';
-            b.style.left = Math.random() * 100 + '%';
-            b.style.animationDuration = (Math.random() * 10 + 5) + 's';
-            b.style.animationDelay = (Math.random() * 5) + 's';
-            bubbleBox.appendChild(b);
-            
-            // cleanup to save memory
-            setTimeout(() => { b.remove(); }, 15000);
+        // 1. Time
+        function updateClock() {
+            const now = new Date();
+            const hours = now.getHours() > 12 ? now.getHours() - 12 : now.getHours();
+            const mins = now.getMinutes().toString().padStart(2, '0');
+            const ampm = now.getHours() >= 12 ? 'pm' : 'am';
+            document.getElementById('clock').innerText = `${hours || 12}:${mins} ${ampm}`;
         }
-        setInterval(createBubble, 800);
+        setInterval(updateClock, 1000);
+        updateClock();
 
-        const frame = document.getElementById('uvFrame');
-        const portal = document.getElementById('portalView');
-        const input = document.getElementById('userInput');
+        // 2. Window Management
+        let zIndex = 100;
 
-        function launch(val) {
+        function openWindow(id) {
+            const win = document.getElementById('win-' + id);
+            win.classList.add('active');
+            win.style.zIndex = ++zIndex;
+        }
+
+        function closeWindow(id) {
+            const win = document.getElementById('win-' + id);
+            win.classList.remove('active');
+            // reset iframe to stop audio
+            const frames = win.getElementsByTagName('iframe');
+            if(frames.length > 0) frames[0].src = 'about:blank';
+        }
+
+        function bringToFront(win) {
+            win.style.zIndex = ++zIndex;
+        }
+
+        // 3. Browser Logic
+        function navigate(val) {
+            const frame = document.getElementById('browser-frame');
             let url = val.trim();
-            if(!url) return;
-
-            // brave search logic
+            if (!url) return;
             if (!url.includes('.') && !url.includes('://')) {
                 url = 'https://search.brave.com/search?q=' + encodeURIComponent(url);
             } else if (!url.startsWith('http')) {
                 url = 'https://' + url;
             }
-
-            portal.classList.add('active');
-
-            if ("serviceWorker" in navigator) {
-                // Ensure SW is registered before navigating
-                navigator.serviceWorker.ready.then(() => {
-                    frame.src = __uv$config.prefix + __uv$config.encodeUrl(url);
-                }).catch(() => {
-                    // Fallback if ready fails immediately (rare)
-                    frame.src = __uv$config.prefix + __uv$config.encodeUrl(url);
-                });
-            } else {
+            
+            if ("serviceWorker" in navigator && navigator.serviceWorker.controller) {
                 frame.src = __uv$config.prefix + __uv$config.encodeUrl(url);
+            } else {
+                // simple fallback if sw not ready yet
+                navigator.serviceWorker.register("/uv/sw.js", { scope: __uv$config.prefix }).then(() => {
+                     frame.src = __uv$config.prefix + __uv$config.encodeUrl(url);
+                });
             }
         }
 
-        function closePortal() {
-            portal.classList.remove('active');
-            setTimeout(() => { frame.src = 'about:blank'; }, 500);
+        // 4. Game Logic
+        function launchRoblox() {
+            openWindow('browser');
+            // Using EasyFun.gg as the current best unblocked cloud method
+            document.getElementById('url-bar').value = 'loading cloud...';
+            navigate('https://www.easyfun.gg/games/roblox.html');
         }
 
-        input.onkeydown = (e) => { if (e.key === 'Enter') launch(input.value); };
+        function openGame(url) {
+            openWindow('browser');
+            navigate(url);
+        }
+
+        // 5. Draggable Windows
+        let isDragging = false;
+        let currentWindow = null;
+        let offset = { x: 0, y: 0 };
+
+        function startDrag(e, winId) {
+            isDragging = true;
+            currentWindow = document.getElementById(winId);
+            bringToFront(currentWindow);
+            
+            const rect = currentWindow.getBoundingClientRect();
+            offset.x = e.clientX - rect.left;
+            offset.y = e.clientY - rect.top;
+            
+            document.addEventListener('mousemove', onDrag);
+            document.addEventListener('mouseup', stopDrag);
+        }
+
+        function onDrag(e) {
+            if (!isDragging) return;
+            e.preventDefault();
+            currentWindow.style.left = (e.clientX - offset.x) + 'px';
+            currentWindow.style.top = (e.clientY - offset.y) + 'px';
+        }
+
+        function stopDrag() {
+            isDragging = false;
+            document.removeEventListener('mousemove', onDrag);
+            document.removeEventListener('mouseup', stopDrag);
+        }
+
+        // 6. Simple Start Menu
+        function toggleMenu() {
+            // Placeholder for start menu animation
+            const btn = document.querySelector('.start-btn');
+            btn.style.transform = 'scale(0.9)';
+            setTimeout(() => btn.style.transform = 'scale(1)', 150);
+        }
+
     </script>
 </body>
 </html>
