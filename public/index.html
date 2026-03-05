@@ -16,18 +16,12 @@
     </script>
 
     <style>
-        :root {
-            --accent: #7000ff;
-            --bg: #050208;
-        }
-
         body {
             margin: 0;
-            padding: 0;
             height: 100vh;
-            background: var(--bg);
+            background: #050208;
             background-image: radial-gradient(circle at center, #1a0b2e 0%, #050208 100%);
-            font-family: system-ui, -apple-system, sans-serif;
+            font-family: ui-sans-serif, system-ui, sans-serif;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -35,159 +29,124 @@
             overflow: hidden;
         }
 
-        .glass-panel {
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(25px);
-            -webkit-backdrop-filter: blur(25px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+        .glass {
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
             border-radius: 40px;
-            padding: 50px;
+            padding: 40px;
+            width: 340px;
             text-align: center;
-            width: 90%;
-            max-width: 450px;
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
         }
 
         h1 {
-            font-size: 3rem;
-            margin: 0 0 5px;
-            letter-spacing: -2px;
+            font-size: 2.5rem;
+            margin: 0 0 20px;
             font-weight: 800;
-            background: linear-gradient(to bottom, #fff, #888);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .input-group {
-            margin-top: 30px;
-            position: relative;
+            letter-spacing: -2px;
         }
 
         input {
             width: 100%;
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 18px 25px;
-            border-radius: 18px;
+            padding: 15px 20px;
+            border-radius: 15px;
             color: white;
             font-size: 1rem;
             outline: none;
             box-sizing: border-box;
-            transition: border 0.3s;
+            margin-bottom: 12px;
         }
 
-        input:focus {
-            border-color: rgba(255, 255, 255, 0.3);
-        }
-
-        .actions {
+        .btns {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            margin-top: 15px;
+            gap: 10px;
         }
 
         button {
-            padding: 16px;
-            border-radius: 16px;
+            padding: 14px;
+            border-radius: 14px;
             border: none;
             font-weight: 700;
             cursor: pointer;
-            transition: opacity 0.2s, transform 0.2s;
+            transition: 0.2s;
         }
 
-        .btn-roblox {
-            background: white;
-            color: black;
-        }
+        .rbx { background: #fff; color: #000; }
+        .srch { background: rgba(255, 255, 255, 0.1); color: #fff; }
 
-        .btn-search {
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
-        }
+        button:hover { opacity: 0.8; transform: scale(0.98); }
 
-        button:hover {
-            opacity: 0.85;
-            transform: scale(1.02);
-        }
-
-        #viewport {
+        #view {
             position: fixed;
             inset: 0;
             display: none;
-            background: black;
+            background: #000;
             z-index: 1000;
         }
 
-        iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-        }
+        iframe { width: 100%; height: 100%; border: none; }
 
-        .close-btn {
+        .x {
             position: fixed;
             bottom: 30px;
             left: 50%;
             transform: translateX(-50%);
-            background: rgba(0, 0, 0, 0.6);
-            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.1);
             border: 1px solid rgba(255, 255, 255, 0.2);
             color: white;
-            padding: 12px 30px;
+            padding: 10px 25px;
             border-radius: 100px;
             cursor: pointer;
-            font-weight: 600;
+            backdrop-filter: blur(10px);
         }
     </style>
 </head>
 <body>
 
-    <div class="glass-panel">
+    <div class="glass">
         <h1>atom</h1>
-        
-        <div class="input-group">
-            <input type="text" id="mainInput" placeholder="url or search...">
-            <div class="actions">
-                <button class="btn-roblox" onclick="launch('https://roblox.com')">roblox</button>
-                <button class="btn-search" onclick="launch(document.getElementById('mainInput').value)">launch</button>
-            </div>
+        <input type="text" id="i" placeholder="search or url...">
+        <div class="btns">
+            <button class="rbx" onclick="go('https://education-edition.github.io/roblox/')">roblox</button>
+            <button class="srch" onclick="go(document.getElementById('i').value)">launch</button>
         </div>
     </div>
 
-    <div id="viewport">
-        <iframe id="uvFrame"></iframe>
-        <button class="close-btn" onclick="exit()">exit session</button>
+    <div id="view">
+        <iframe id="f"></iframe>
+        <button class="x" onclick="kill()">exit</button>
     </div>
 
     <script>
-        const frame = document.getElementById('uvFrame');
-        const vp = document.getElementById('viewport');
-        const input = document.getElementById('mainInput');
+        const f = document.getElementById('f');
+        const v = document.getElementById('view');
+        const i = document.getElementById('i');
 
-        function launch(val) {
-            let url = val.trim();
-            if (!url) return;
+        function go(val) {
+            let u = val.trim();
+            if (!u) return;
 
-            if (url === 'https://roblox.com') {
-                // roblox specific launch
-            } else if (!url.includes('.')) {
-                // if it's not a link, use brave (better for proxies)
-                url = 'https://search.brave.com/search?q=' + encodeURIComponent(url);
-            } else if (!url.startsWith('http')) {
-                url = 'https://' + url;
+            if (!u.includes('.')) {
+                u = 'https://search.brave.com/search?q=' + encodeURIComponent(u);
+            } else if (!u.startsWith('http')) {
+                u = 'https://' + u;
             }
 
-            frame.src = __uv$config.prefix + __uv$config.encodeUrl(url);
-            vp.style.display = 'block';
+            f.src = __uv$config.prefix + __uv$config.encodeUrl(u);
+            v.style.display = 'block';
         }
 
-        function exit() {
-            vp.style.display = 'none';
-            frame.src = 'about:blank';
+        function kill() {
+            v.style.display = 'none';
+            f.src = 'about:blank';
         }
 
-        input.onkeydown = (e) => { if (e.key === 'Enter') launch(input.value); };
+        i.onkeydown = (e) => { if (e.key === 'Enter') go(i.value); };
     </script>
 </body>
 </html>
