@@ -3,654 +3,287 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AtomOS | Ultimate</title>
+    <title>Atom | Cosmic Web</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* --- CORE VARIABLES --- */
+        /* --- ATOM SPACE VARIABLES --- */
         :root {
-            --primary: #0078d7;
-            --glass: rgba(10, 20, 30, 0.85);
+            --neon-cyan: #00f3ff;
+            --neon-purple: #bc13fe;
+            --deep-space: #050a14;
+            --glass-surface: rgba(20, 30, 50, 0.65);
             --glass-border: rgba(255, 255, 255, 0.15);
-            --taskbar-height: 48px;
-            --bg-image: url('https://images.unsplash.com/photo-1579546929518-9e396f3cc809?q=80&w=2070');
+            --gloss-overlay: linear-gradient(135deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0.05) 40%, rgba(255,255,255,0) 50%, rgba(255,255,255,0.1) 100%);
+            --font-main: 'Segoe UI', 'Frutiger', sans-serif;
         }
 
-        /* --- RESET & BASIC SETUP --- */
-        * { box-sizing: border-box; user-select: none; outline: none; font-family: 'Segoe UI', sans-serif; }
-        body { margin: 0; overflow: hidden; height: 100vh; background: #000; color: white; }
+        /* --- UNIVERSE RESET --- */
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: var(--font-main); }
 
-        /* --- BOOT & LOGIN --- */
-        #boot-layer {
-            position: fixed; inset: 0; background: #000; z-index: 10000;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
+        body {
+            height: 100vh;
+            overflow: hidden;
+            background: #000 url('https://images.unsplash.com/photo-1462331940025-496dfbfc7564?q=80&w=2000') no-repeat center center fixed;
+            background-size: cover;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            perspective: 1000px;
         }
-        .boot-logo { font-size: 80px; font-weight: 100; letter-spacing: -4px; background: linear-gradient(45deg, #00f2fe, #4facfe); -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: fadeUp 1s ease-out; }
-        .spinner { width: 50px; height: 50px; border: 3px solid rgba(255,255,255,0.1); border-top: 3px solid #0078d7; border-radius: 50%; animation: spin 0.8s linear infinite; margin-top: 30px; }
+
+        /* Ambient Space Overlay (Aurora/Nebula glow) */
+        body::before {
+            content: ''; position: absolute; inset: 0;
+            background: radial-gradient(circle at 20% 80%, rgba(188, 19, 254, 0.2), transparent 50%),
+                        radial-gradient(circle at 80% 20%, rgba(0, 243, 255, 0.15), transparent 50%);
+            pointer-events: none; z-index: 1;
+        }
+
+        /* --- THE CORE (Main Container) --- */
+        .atom-container {
+            width: 100%; max-width: 750px;
+            background: var(--glass-surface);
+            backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
+            border: 1px solid var(--glass-border);
+            border-top: 1px solid rgba(255,255,255,0.4);
+            border-radius: 30px;
+            padding: 50px;
+            text-align: center;
+            box-shadow: 0 40px 80px rgba(0,0,0,0.5), inset 0 0 0 1px rgba(255,255,255,0.05);
+            position: relative; z-index: 10;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        /* --- BRANDING --- */
+        .logo-wrapper { margin-bottom: 35px; position: relative; display: inline-block; }
         
-        #login-layer {
-            position: fixed; inset: 0; background: var(--bg-image) center/cover;
-            z-index: 9999; display: none; align-items: center; justify-content: center;
-            backdrop-filter: blur(15px);
+        .atom-logo {
+            font-size: 60px; font-weight: 200; letter-spacing: -2px;
+            background: linear-gradient(to bottom, #fff, #aadaff);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            position: relative; z-index: 2;
+            text-shadow: 0 0 30px rgba(0, 243, 255, 0.3);
         }
-        .login-card {
-            background: rgba(0,0,0,0.6); padding: 40px; border-radius: 10px;
-            text-align: center; border: 1px solid rgba(255,255,255,0.2);
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5); width: 350px;
-        }
-        .avatar { width: 100px; height: 100px; border-radius: 50%; background: #ccc; margin: 0 auto 20px; border: 3px solid white; background-size: cover; }
-        .login-input { background: rgba(255,255,255,0.1); border: 1px solid #555; padding: 10px; color: white; width: 100%; margin-bottom: 10px; border-radius: 4px; }
-        .btn-primary { background: var(--primary); color: white; border: none; padding: 10px 20px; cursor: pointer; border-radius: 4px; width: 100%; font-weight: 600; }
-        .btn-primary:hover { filter: brightness(1.1); }
+        .atom-logo span { font-weight: 700; color: var(--neon-cyan); }
 
-        /* --- DESKTOP ENVIRONMENT --- */
-        #desktop {
-            position: absolute; inset: 0; background: var(--bg-image) center/cover;
-            transition: transform 0.3s;
+        /* The Spinning Orbit Ring */
+        .orbit-ring {
+            position: absolute; top: 50%; left: 50%;
+            width: 140px; height: 40px;
+            border: 2px solid rgba(0, 243, 255, 0.6);
+            border-radius: 50%;
+            transform: translate(-50%, -50%) rotate(-20deg);
+            box-shadow: 0 0 15px rgba(0, 243, 255, 0.2);
+            animation: orbitSpin 8s linear infinite;
+            pointer-events: none;
+        }
+        .orbit-ring::after {
+            content: ''; position: absolute; top: 3px; left: 10px;
+            width: 8px; height: 8px; background: white; border-radius: 50%;
+            box-shadow: 0 0 10px white;
+        }
+
+        /* --- SEARCH HUD --- */
+        .search-container { position: relative; margin-bottom: 40px; group; }
+        
+        .search-bar {
+            width: 100%;
+            padding: 20px 60px 20px 25px;
+            font-size: 18px; color: white;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 50px;
+            outline: none; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: inset 0 5px 15px rgba(0,0,0,0.2);
         }
         
-        /* Grid */
-        #icon-grid {
-            padding: 20px; display: grid; grid-template-columns: repeat(auto-fill, 90px);
-            grid-auto-rows: 100px; gap: 10px; height: calc(100% - var(--taskbar-height));
-        }
-
-        .d-icon {
-            display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
-            cursor: pointer; text-align: center; color: white; text-shadow: 0 1px 3px rgba(0,0,0,0.8);
-            transition: 0.1s; padding: 5px; border-radius: 5px;
-        }
-        .d-icon:hover { background: rgba(255,255,255,0.15); box-shadow: inset 0 0 0 1px rgba(255,255,255,0.2); }
-        .d-icon i, .d-icon img { font-size: 36px; margin-bottom: 5px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5)); width: 48px; height: 48px; object-fit: contain; }
-        .d-icon span { font-size: 12px; line-height: 1.2; word-wrap: break-word; }
-
-        /* --- WINDOW MANAGER --- */
-        .window {
-            position: absolute; background: var(--glass);
-            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-            border: 1px solid var(--glass-border); border-radius: 8px;
-            box-shadow: 0 15px 40px rgba(0,0,0,0.6);
-            display: flex; flex-direction: column; overflow: hidden;
-            min-width: 300px; min-height: 200px;
-            opacity: 0; transform: scale(0.95); transition: opacity 0.2s, transform 0.2s, width 0.2s, height 0.2s, top 0.2s, left 0.2s;
-            visibility: hidden; resize: both;
-        }
-        .window.active { opacity: 1; transform: scale(1); visibility: visible; }
-        .window.maximized { top:0!important; left:0!important; width:100%!important; height:calc(100% - var(--taskbar-height))!important; border-radius: 0; }
-
-        .title-bar {
-            height: 36px; background: rgba(255,255,255,0.05);
-            display: flex; align-items: center; justify-content: space-between;
-            padding: 0 10px; cursor: default; border-bottom: 1px solid var(--glass-border);
-        }
-        .win-title { font-size: 13px; font-weight: 600; opacity: 0.9; display: flex; align-items: center; gap: 8px; }
+        .search-bar::placeholder { color: rgba(255,255,255,0.5); }
         
-        .win-controls { display: flex; gap: 8px; }
-        .win-btn { width: 12px; height: 12px; border-radius: 50%; cursor: pointer; position: relative; }
-        .btn-close { background: #ff5f56; }
-        .btn-min { background: #ffbd2e; }
-        .btn-max { background: #27c93f; }
-        .win-btn:hover { filter: brightness(0.8); }
-
-        .win-body { flex: 1; position: relative; background: #1a1a1a; overflow: hidden; }
-        iframe { width: 100%; height: 100%; border: none; background: white; }
-
-        /* --- TASKBAR --- */
-        #taskbar {
-            position: absolute; bottom: 0; width: 100%; height: var(--taskbar-height);
-            background: rgba(10, 10, 15, 0.85); backdrop-filter: blur(15px);
-            border-top: 1px solid var(--glass-border);
-            display: flex; align-items: center; padding: 0 10px; z-index: 9000;
+        .search-bar:focus {
+            background: rgba(0, 0, 0, 0.5);
+            border-color: var(--neon-cyan);
+            box-shadow: 0 0 25px rgba(0, 243, 255, 0.2), inset 0 2px 10px rgba(0,0,0,0.3);
         }
 
-        .start-btn {
-            width: 36px; height: 36px; background: linear-gradient(135deg, #00d2ff, #3a7bd5);
-            border-radius: 4px; display: flex; align-items: center; justify-content: center;
-            font-size: 20px; cursor: pointer; box-shadow: 0 0 10px rgba(0,210,255,0.5);
-            transition: 0.2s; margin-right: 10px;
+        .go-btn {
+            position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
+            width: 48px; height: 48px;
+            border-radius: 50%; border: none;
+            background: linear-gradient(180deg, #00f3ff, #0078d7);
+            color: white; font-size: 18px; cursor: pointer;
+            box-shadow: 0 0 15px rgba(0, 243, 255, 0.4);
+            transition: 0.3s;
+            overflow: hidden;
         }
-        .start-btn:hover { filter: brightness(1.2); }
+        /* Button Gloss */
+        .go-btn::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 50%;
+            background: linear-gradient(to bottom, rgba(255,255,255,0.8), rgba(255,255,255,0));
+            opacity: 0.6;
+        }
+        .go-btn:hover { transform: translateY(-50%) scale(1.1); filter: brightness(1.2); }
 
-        .task-container { display: flex; gap: 5px; flex: 1; margin-left: 10px; }
-        .task-item {
-            width: 40px; height: 40px; border-radius: 4px;
+        /* --- APP GRID --- */
+        .app-dock {
+            display: flex; justify-content: center; gap: 25px; flex-wrap: wrap;
+        }
+
+        .app-item {
+            display: flex; flex-direction: column; align-items: center; gap: 10px;
+            cursor: pointer; transition: 0.3s;
+        }
+        .app-item:hover { transform: translateY(-8px); }
+        
+        .icon-glass {
+            width: 64px; height: 64px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 16px;
             display: flex; align-items: center; justify-content: center;
-            font-size: 20px; color: #aaa; cursor: pointer; position: relative;
-            transition: 0.2s;
+            font-size: 28px; color: white;
+            position: relative; overflow: hidden;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
         }
-        .task-item:hover { background: rgba(255,255,255,0.1); color: white; }
-        .task-item.active { background: rgba(255,255,255,0.15); box-shadow: inset 0 -3px 0 var(--primary); color: white; }
-
-        .tray { display: flex; gap: 10px; font-size: 12px; align-items: center; padding-right: 10px; }
-
-        /* --- START MENU (METRO STYLE) --- */
-        #start-menu {
-            position: fixed; bottom: 50px; left: 10px; width: 600px; height: 400px;
-            background: rgba(20, 25, 30, 0.95); backdrop-filter: blur(25px);
-            border: 1px solid var(--glass-border); border-radius: 8px;
-            z-index: 9001; display: none; padding: 20px;
-            animation: slideUp 0.2s cubic-bezier(0.1, 0.9, 0.2, 1);
-            grid-template-columns: 150px 1fr; gap: 20px;
+        
+        /* The "Frutiger" Shine */
+        .icon-glass::after {
+            content: ''; position: absolute; inset: 0;
+            background: var(--gloss-overlay);
         }
-        #start-menu.open { display: grid; }
-        
-        .start-sidebar { border-right: 1px solid rgba(255,255,255,0.1); display: flex; flex-direction: column; gap: 10px; }
-        .start-btn-link { padding: 10px; cursor: pointer; border-radius: 4px; display: flex; align-items: center; gap: 10px; font-size: 13px; }
-        .start-btn-link:hover { background: rgba(255,255,255,0.1); }
-        
-        .start-grid { display: grid; grid-template-columns: repeat(3, 1fr); grid-auto-rows: 100px; gap: 10px; overflow-y: auto; }
-        .tile {
-            background: var(--primary); color: white; padding: 10px; border-radius: 4px;
-            display: flex; flex-direction: column; justify-content: flex-end; cursor: pointer;
-            transition: transform 0.1s; position: relative; overflow: hidden;
-        }
-        .tile:hover { transform: scale(1.03); z-index: 2; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
-        .tile i { font-size: 30px; margin-bottom: auto; margin-top: 10px; margin-left: 5px; }
-        .tile span { font-size: 13px; font-weight: 600; }
-        
-        /* Tile Colors */
-        .tile.wide { grid-column: span 2; background: #603cba; }
-        .tile.green { background: #00a300; }
-        .tile.red { background: #ee1111; }
-        .tile.orange { background: #e3a21a; }
 
-        /* --- APP SPECIFIC UI --- */
-        .browser-toolbar { display: flex; padding: 8px; background: #222; gap: 10px; align-items: center; }
-        .browser-input { flex: 1; background: #333; border: 1px solid #444; color: white; padding: 5px 10px; border-radius: 4px; }
-        
-        .file-explorer { color: white; padding: 10px; height: 100%; }
-        .file-list { display: grid; grid-template-columns: repeat(auto-fill, 80px); gap: 10px; margin-top: 10px; }
-        .file-item { text-align: center; cursor: pointer; font-size: 12px; padding: 5px; }
-        .file-item:hover { background: rgba(255,255,255,0.1); border-radius: 4px; }
-        
-        /* Context Menu */
-        #context-menu {
-            position: fixed; background: #2b2b2b; border: 1px solid #444;
-            width: 180px; z-index: 9999; display: none; flex-direction: column;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.5); padding: 5px 0;
-        }
-        .ctx-item { padding: 8px 15px; font-size: 13px; cursor: pointer; color: white; display: flex; justify-content: space-between; }
-        .ctx-item:hover { background: var(--primary); }
+        .app-name { font-size: 13px; font-weight: 500; letter-spacing: 0.5px; opacity: 0.8; text-shadow: 0 2px 4px rgba(0,0,0,0.8); }
 
-        @keyframes spin { 100% { transform: rotate(360deg); } }
-        @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(50px); } to { opacity: 1; transform: translateY(0); } }
+        /* Icon Specifics */
+        .app-item:hover .icon-glass { border-color: var(--neon-cyan); box-shadow: 0 0 20px var(--neon-cyan); }
+        .fa-discord { color: #5865F2; }
+        .fa-youtube { color: #ff4444; }
+        .fa-tiktok { color: #fe2c55; } /* Text shadow handles the white part */
+        .fa-google { color: #4285F4; }
+
+        /* --- STATUS BAR --- */
+        .status-bar {
+            margin-top: 40px; padding-top: 20px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            display: flex; justify-content: space-between; align-items: center;
+            font-size: 12px; color: rgba(255,255,255,0.5);
+        }
+        .status-pill {
+            background: rgba(0, 255, 0, 0.1); border: 1px solid rgba(0, 255, 0, 0.3);
+            padding: 4px 12px; border-radius: 20px; color: #4aff4a;
+            display: flex; align-items: center; gap: 6px;
+        }
+        .blink { width: 6px; height: 6px; background: #4aff4a; border-radius: 50%; animation: blink 2s infinite; }
+
+        /* --- ANIMATIONS --- */
+        @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-15px); } }
+        @keyframes orbitSpin { from { transform: translate(-50%, -50%) rotate(0deg); } to { transform: translate(-50%, -50%) rotate(360deg); } }
+        @keyframes blink { 0%, 100% { opacity: 1; box-shadow: 0 0 5px #4aff4a; } 50% { opacity: 0.4; } }
 
     </style>
 </head>
 <body>
 
-    <!-- BOOT SCREEN -->
-    <div id="boot-layer">
-        <div class="boot-logo">Atom<b style="font-weight:600">OS</b></div>
-        <div class="spinner"></div>
-        <div style="margin-top:20px; color:#666;">Ultimate Edition</div>
-    </div>
+    <div class="atom-container">
+        <!-- Logo -->
+        <div class="logo-wrapper">
+            <div class="orbit-ring"></div>
+            <div class="atom-logo">Atom<span>OS</span></div>
+        </div>
 
-    <!-- LOGIN SCREEN -->
-    <div id="login-layer">
-        <div class="login-card">
-            <div class="avatar" id="login-avatar" style="background-image: var(--bg-image);"></div>
-            <h2 id="login-msg">Welcome Back</h2>
-            <div id="auth-forms">
-                <input type="text" id="username-in" class="login-input" placeholder="Enter Username">
-                <button class="btn-primary" onclick="OS.login()">Log In</button>
+        <!-- Search / Proxy Input -->
+        <form id="proxy-form" class="search-container">
+            <input type="text" class="search-bar" id="uv-address" placeholder="Enter URL or Search Query..." autocomplete="off">
+            <button type="submit" class="go-btn"><i class="fa-solid fa-rocket"></i></button>
+        </form>
+
+        <!-- Quick Launch -->
+        <div class="app-dock">
+            <div class="app-item" onclick="launch('https://discord.com')">
+                <div class="icon-glass"><i class="fa-brands fa-discord"></i></div>
+                <div class="app-name">Discord</div>
             </div>
-            <div style="margin-top:15px; font-size:12px; color:#aaa; cursor:pointer;" onclick="OS.reset()">Reset System</div>
+            <div class="app-item" onclick="launch('https://youtube.com')">
+                <div class="icon-glass"><i class="fa-brands fa-youtube"></i></div>
+                <div class="app-name">YouTube</div>
+            </div>
+            <div class="app-item" onclick="launch('https://tiktok.com')">
+                <div class="icon-glass"><i class="fa-brands fa-tiktok"></i></div>
+                <div class="app-name">TikTok</div>
+            </div>
+            <div class="app-item" onclick="launch('https://google.com')">
+                <div class="icon-glass"><i class="fa-brands fa-google"></i></div>
+                <div class="app-name">Google</div>
+            </div>
+            <div class="app-item" onclick="launch('https://now.gg')">
+                <div class="icon-glass"><i class="fa-solid fa-gamepad" style="color:var(--neon-purple)"></i></div>
+                <div class="app-name">Now.gg</div>
+            </div>
+        </div>
+
+        <!-- Footer Info -->
+        <div class="status-bar">
+            <div class="status-pill"><div class="blink"></div> Systems Nominal</div>
+            <div>Ultraviolet v2.0 // Vercel Secure</div>
         </div>
     </div>
 
-    <!-- DESKTOP -->
-    <div id="desktop" oncontextmenu="OS.showContext(event)">
-        <div id="icon-grid">
-            <!-- Icons injected by JS -->
-        </div>
-    </div>
-
-    <!-- TASKBAR -->
-    <div id="taskbar">
-        <div class="start-btn" onclick="OS.toggleStart()"><i class="fa-brands fa-windows"></i></div>
-        <div class="task-container" id="task-list"></div>
-        <div class="tray">
-            <i class="fa-solid fa-wifi"></i>
-            <span id="clock">12:00 PM</span>
-        </div>
-    </div>
-
-    <!-- START MENU -->
-    <div id="start-menu">
-        <div class="start-sidebar">
-            <div class="start-btn-link" onclick="Apps.open('settings')"><i class="fa-solid fa-gear"></i> Settings</div>
-            <div class="start-btn-link" onclick="Apps.open('explorer')"><i class="fa-solid fa-folder"></i> Documents</div>
-            <div class="start-btn-link" onclick="Apps.open('camera')"><i class="fa-solid fa-camera"></i> Camera</div>
-            <div class="start-btn-link" onclick="location.reload()" style="margin-top:auto;"><i class="fa-solid fa-power-off"></i> Shut Down</div>
-        </div>
-        <div class="start-grid">
-            <div class="tile wide" onclick="Apps.open('browser')">
-                <i class="fa-brands fa-edge"></i>
-                <span>Atom Net</span>
-            </div>
-            <div class="tile green" onclick="Apps.open('arcade')">
-                <i class="fa-solid fa-gamepad"></i>
-                <span>Truffle Arcade</span>
-            </div>
-            <div class="tile orange" onclick="Apps.open('paint')">
-                <i class="fa-solid fa-palette"></i>
-                <span>Paint</span>
-            </div>
-            <div class="tile red" onclick="Apps.open('media')">
-                <i class="fa-solid fa-music"></i>
-                <span>Media</span>
-            </div>
-            <div class="tile" onclick="Apps.open('vscode')">
-                <i class="fa-solid fa-code"></i>
-                <span>Code</span>
-            </div>
-            <div class="tile" onclick="Apps.open('terminal')">
-                <i class="fa-solid fa-terminal"></i>
-                <span>Terminal</span>
-            </div>
-        </div>
-    </div>
-
-    <!-- CONTEXT MENU -->
-    <div id="context-menu">
-        <div class="ctx-item" onclick="Apps.open('notepad')">New Text Document</div>
-        <div class="ctx-item" onclick="Apps.open('settings')">Personalize</div>
-        <div class="ctx-item" onclick="location.reload()">Refresh</div>
-    </div>
+    <!-- 
+       === ULTRAVIOLET SCRIPTS ===
+       Ensure the 'uv' folder exists in your Vercel public/root directory 
+    -->
+    <script src="uv/uv.bundle.js"></script>
+    <script src="uv/uv.config.js"></script>
 
     <script>
-        // --- CORE OPERATING SYSTEM ---
-        const OS = {
-            user: { name: 'Admin', theme: 'dark', files: {} },
-            proxies: [
-                'https://tomp.app/', 
-                'https://cdn.incognito.wiki/', 
-                'https://ludicrous.icu/',
-                'https://mathsspot.com/',
-                'https://search.brave.com/search?q=' // Fallback
-            ],
-            
-            init: function() {
-                // Boot Sequence
-                setTimeout(() => {
-                    document.getElementById('boot-layer').style.display = 'none';
-                    // Load Data
-                    const saved = localStorage.getItem('atom_os_truffle');
-                    if(saved) this.user = JSON.parse(saved);
-                    
-                    document.getElementById('login-layer').style.display = 'flex';
-                    if(this.user.name) document.getElementById('username-in').value = this.user.name;
-                    
-                    this.renderDesktop();
-                    this.startClock();
-                }, 2000);
-            },
+        const form = document.getElementById('proxy-form');
+        const input = document.getElementById('uv-address');
 
-            login: function() {
-                const name = document.getElementById('username-in').value || 'User';
-                this.user.name = name;
-                this.save();
-                document.getElementById('login-layer').style.display = 'none';
-                Apps.playStartupSound();
-            },
+        // Check if UV is loaded
+        const isUVLoaded = () => typeof Ultraviolet !== 'undefined';
 
-            save: function() {
-                localStorage.setItem('atom_os_truffle', JSON.stringify(this.user));
-            },
-
-            reset: function() {
-                localStorage.removeItem('atom_os_truffle');
-                location.reload();
-            },
-
-            renderDesktop: function() {
-                const grid = document.getElementById('icon-grid');
-                grid.innerHTML = '';
-                const apps = [
-                    { id: 'browser', name: 'Browser', icon: 'fa-globe', color: '#00d2ff' },
-                    { id: 'arcade', name: 'Arcade', icon: 'fa-gamepad', color: '#00ff00' },
-                    { id: 'explorer', name: 'Files', icon: 'fa-folder', color: '#e3a21a' },
-                    { id: 'notepad', name: 'Notes', icon: 'fa-note-sticky', color: '#fff' },
-                    { id: 'settings', name: 'Settings', icon: 'fa-gear', color: '#aaa' }
-                ];
-
-                apps.forEach(app => {
-                    const el = document.createElement('div');
-                    el.className = 'd-icon';
-                    el.onclick = () => Apps.open(app.id);
-                    el.innerHTML = `<i class="fa-solid ${app.icon}" style="color:${app.color}"></i><span>${app.name}</span>`;
-                    grid.appendChild(el);
-                });
-            },
-
-            startClock: function() {
-                setInterval(() => {
-                    document.getElementById('clock').innerText = new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
-                }, 1000);
-            },
-
-            toggleStart: () => document.getElementById('start-menu').classList.toggle('open'),
-            
-            showContext: function(e) {
-                e.preventDefault();
-                const ctx = document.getElementById('context-menu');
-                ctx.style.display = 'flex';
-                ctx.style.left = e.clientX + 'px';
-                ctx.style.top = e.clientY + 'px';
-                document.addEventListener('click', () => ctx.style.display = 'none', {once:true});
+        async function registerSW() {
+            if (!navigator.serviceWorker) {
+                throw new Error("Service Workers are not supported.");
             }
-        };
+            await navigator.serviceWorker.register('/uv/sw.js', {
+                scope: __uv$config.prefix
+            });
+        }
 
-        // --- WINDOW MANAGER ---
-        const WM = {
-            zIndex: 100,
-            windows: {},
+        async function launch(url) {
+            // Visual feedback
+            input.placeholder = "Initiating connection...";
             
-            create: function(id, title, content, w=800, h=600) {
-                if(document.getElementById('win-'+id)) return this.focus(id);
-                document.getElementById('start-menu').classList.remove('open');
-
-                const win = document.createElement('div');
-                win.className = 'window';
-                win.id = 'win-'+id;
-                win.style.width = w+'px'; win.style.height = h+'px';
-                win.style.left = (50 + Math.random()*50) + 'px'; win.style.top = (50 + Math.random()*50) + 'px';
-                win.style.zIndex = ++this.zIndex;
-
-                win.innerHTML = `
-                    <div class="title-bar" onmousedown="WM.dragStart(event, '${id}')">
-                        <div class="win-title"><i class="fa-solid fa-window-maximize"></i> ${title}</div>
-                        <div class="win-controls">
-                            <div class="win-btn btn-min" onclick="WM.minimize('${id}')"></div>
-                            <div class="win-btn btn-max" onclick="WM.maximize('${id}')"></div>
-                            <div class="win-btn btn-close" onclick="WM.close('${id}')"></div>
-                        </div>
-                    </div>
-                    <div class="win-body">${content}</div>
-                `;
-
-                win.addEventListener('mousedown', () => this.focus(id));
-                document.body.appendChild(win);
-                this.addTask(id);
-                
-                setTimeout(() => { win.classList.add('active'); this.focus(id); }, 10);
-            },
-
-            close: function(id) {
-                const win = document.getElementById('win-'+id);
-                win.classList.remove('active');
-                setTimeout(() => win.remove(), 200);
-                document.getElementById('task-'+id)?.remove();
-            },
-
-            focus: function(id) {
-                const win = document.getElementById('win-'+id);
-                if(win) {
-                    win.style.zIndex = ++this.zIndex;
-                    document.querySelectorAll('.task-item').forEach(t => t.classList.remove('active'));
-                    document.getElementById('task-'+id)?.classList.add('active');
-                }
-            },
-
-            minimize: function(id) {
-                document.getElementById('win-'+id).classList.remove('active');
-                document.getElementById('task-'+id).classList.remove('active');
-            },
-
-            maximize: function(id) {
-                document.getElementById('win-'+id).classList.toggle('maximized');
-            },
-
-            addTask: function(id) {
-                const task = document.createElement('div');
-                task.className = 'task-item active';
-                task.id = 'task-'+id;
-                task.innerHTML = '<i class="fa-solid fa-window-maximize"></i>';
-                task.onclick = () => {
-                    const win = document.getElementById('win-'+id);
-                    if(!win.classList.contains('active')) { win.classList.add('active'); this.focus(id); }
-                    else this.focus(id);
-                };
-                document.getElementById('task-list').appendChild(task);
-            },
-
-            dragStart: function(e, id) {
-                if(e.target.closest('.win-controls')) return;
-                const win = document.getElementById('win-'+id);
-                this.focus(id);
-                let shiftX = e.clientX - win.getBoundingClientRect().left;
-                let shiftY = e.clientY - win.getBoundingClientRect().top;
-                
-                function move(e) {
-                    win.style.left = e.pageX - shiftX + 'px';
-                    win.style.top = e.pageY - shiftY + 'px';
-                }
-                function stop() {
-                    document.removeEventListener('mousemove', move);
-                    document.removeEventListener('mouseup', stop);
-                }
-                document.addEventListener('mousemove', move);
-                document.addEventListener('mouseup', stop);
+            if(!isUVLoaded()) {
+                console.warn("UV Scripts missing. Redirecting normally for demo.");
+                window.location.href = url;
+                return;
             }
-        };
 
-        // --- APPLICATIONS ---
-        const Apps = {
-            playStartupSound: () => {
-                // Simulated sound
-                const ctx = new (window.AudioContext || window.webkitAudioContext)();
-                const osc = ctx.createOscillator();
-                const gain = ctx.createGain();
-                osc.connect(gain); gain.connect(ctx.destination);
-                osc.type = 'sine'; osc.frequency.setValueAtTime(440, ctx.currentTime);
-                osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.5);
-                gain.gain.setValueAtTime(0.1, ctx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.5);
-                osc.start(); osc.stop(ctx.currentTime + 0.5);
-            },
-
-            open: function(app) {
-                switch(app) {
-                    case 'browser':
-                        WM.create('browser', 'Atom Net', `
-                            <div style="display:flex; flex-direction:column; height:100%;">
-                                <div class="browser-toolbar">
-                                    <i class="fa-solid fa-arrow-left" style="color:#aaa; cursor:pointer;" onclick="Apps.browserBack()"></i>
-                                    <i class="fa-solid fa-rotate-right" style="color:#aaa; cursor:pointer;" onclick="Apps.browserReload()"></i>
-                                    <input type="text" class="browser-input" id="url-bar" value="https://bing.com" onkeydown="if(event.key=='Enter') Apps.browserGo()">
-                                    <select onchange="Apps.changeProxy(this.value)" style="background:#333; color:white; border:none; border-radius:4px; padding:5px;">
-                                        <option value="0">Proxy Node 1</option>
-                                        <option value="1">Proxy Node 2</option>
-                                        <option value="2">Proxy Node 3</option>
-                                        <option value="3">Math Cloak</option>
-                                    </select>
-                                </div>
-                                <iframe id="browser-frame" src="https://bing.com"></iframe>
-                            </div>
-                        `, 900, 600);
-                        break;
-                    
-                    case 'arcade':
-                        WM.create('arcade', 'Truffle Arcade', `
-                            <div style="background:#111; height:100%; color:white; padding:10px; overflow-y:auto;">
-                                <h3 style="border-bottom:1px solid #333; padding-bottom:10px;">Unblocked Games</h3>
-                                <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(120px, 1fr)); gap:15px;">
-                                    ${Apps.generateGameCard('Minecraft', 'https://eaglercraft.com/mc/1.8.8/', 'https://images.unsplash.com/photo-1607677912781-a9f7d4d4206e?w=200')}
-                                    ${Apps.generateGameCard('1v1.LOL', 'https://1v1.lol', 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=200')}
-                                    ${Apps.generateGameCard('Retro Bowl', 'https://retro-bowl.github.io/retro-bowl/', 'https://images.unsplash.com/photo-1579952363873-27f3bade9f55?w=200')}
-                                    ${Apps.generateGameCard('Slope', 'https://y8.com/games/slope', 'https://images.unsplash.com/photo-1551103782-8ab07afd45c1?w=200')}
-                                </div>
-                            </div>
-                        `, 800, 500);
-                        break;
-                    
-                    case 'paint':
-                        WM.create('paint', 'Canvas Paint', `
-                            <div style="display:flex; flex-direction:column; height:100%; background:white;">
-                                <div style="padding:5px; background:#eee; border-bottom:1px solid #ccc; display:flex; gap:10px;">
-                                    <input type="color" id="paint-color" value="#000000">
-                                    <input type="range" id="paint-size" min="1" max="20" value="5">
-                                    <button onclick="Apps.clearPaint()">Clear</button>
-                                </div>
-                                <canvas id="paint-canvas" style="flex:1; cursor:crosshair; touch-action:none;"></canvas>
-                            </div>
-                        `, 600, 450);
-                        setTimeout(Apps.initPaint, 100);
-                        break;
-
-                    case 'camera':
-                        WM.create('camera', 'Webcam', `
-                            <div style="background:black; height:100%; display:flex; align-items:center; justify-content:center;">
-                                <video id="cam-feed" autoplay style="max-width:100%; max-height:100%;"></video>
-                            </div>
-                        `, 500, 400);
-                        setTimeout(() => {
-                            navigator.mediaDevices.getUserMedia({video:true})
-                            .then(stream => document.getElementById('cam-feed').srcObject = stream)
-                            .catch(e => alert("Camera Access Denied or Not Found"));
-                        }, 500);
-                        break;
-                        
-                    case 'explorer':
-                        WM.create('explorer', 'File Explorer', `
-                            <div class="file-explorer">
-                                <div style="border-bottom:1px solid #444; padding-bottom:5px;">Home / User / Documents</div>
-                                <div class="file-list" id="explorer-content">
-                                    ${Object.keys(OS.user.files).map(f => `
-                                        <div class="file-item" onclick="Apps.openFile('${f}')">
-                                            <i class="fa-solid fa-file-lines" style="font-size:30px; color:#4facfe;"></i><br>${f}
-                                        </div>
-                                    `).join('')}
-                                </div>
-                            </div>
-                        `, 600, 400);
-                        break;
-
-                    case 'notepad':
-                        WM.create('notepad', 'Notepad', `
-                            <div style="display:flex; flex-direction:column; height:100%;">
-                                <div style="background:#eee; padding:5px;">
-                                    <button onclick="Apps.saveFile()">Save</button>
-                                </div>
-                                <textarea id="notepad-area" style="flex:1; padding:10px; resize:none; border:none; outline:none; font-family:monospace;"></textarea>
-                            </div>
-                        `, 500, 400);
-                        break;
-
-                    case 'media':
-                        WM.create('media', 'Media Player', `
-                            <div style="padding:20px; text-align:center; color:white;">
-                                <h3>Upload MP3/MP4</h3>
-                                <input type="file" onchange="Apps.playMedia(this)" accept="audio/*,video/*">
-                                <div id="media-container" style="margin-top:20px;"></div>
-                            </div>
-                        `, 400, 300);
-                        break;
-                }
-            },
-
-            // --- BROWSER LOGIC ---
-            browserGo: function() {
-                const url = document.getElementById('url-bar').value;
-                const frame = document.getElementById('browser-frame');
-                if(url.includes('google') || url.includes('youtube')) {
-                    if(confirm("Google/YouTube block embedding. Switch to Proxy Mode?")) {
-                        // Switch to first proxy
-                        document.querySelector('select').value = 0;
-                        Apps.changeProxy(0);
-                    }
-                } else if(!url.startsWith('http')) {
-                    frame.src = 'https://www.bing.com/search?q=' + encodeURIComponent(url);
-                } else {
-                    frame.src = url;
-                }
-            },
-            browserBack: () => document.getElementById('browser-frame').contentWindow.history.back(),
-            browserReload: () => document.getElementById('browser-frame').contentWindow.location.reload(),
-            changeProxy: (index) => {
-                const frame = document.getElementById('browser-frame');
-                frame.src = OS.proxies[index];
-                document.getElementById('url-bar').value = OS.proxies[index];
-            },
-
-            // --- PAINT LOGIC ---
-            initPaint: function() {
-                const cvs = document.getElementById('paint-canvas');
-                if(!cvs) return;
-                const ctx = cvs.getContext('2d');
-                cvs.width = cvs.offsetWidth; cvs.height = cvs.offsetHeight;
-                
-                let painting = false;
-                cvs.onmousedown = () => painting = true;
-                cvs.onmouseup = () => { painting = false; ctx.beginPath(); };
-                cvs.onmousemove = (e) => {
-                    if(!painting) return;
-                    const rect = cvs.getBoundingClientRect();
-                    ctx.lineWidth = document.getElementById('paint-size').value;
-                    ctx.lineCap = 'round';
-                    ctx.strokeStyle = document.getElementById('paint-color').value;
-                    ctx.lineTo(e.clientX - rect.left, e.clientY - rect.top);
-                    ctx.stroke();
-                    ctx.beginPath();
-                    ctx.moveTo(e.clientX - rect.left, e.clientY - rect.top);
-                };
-            },
-            clearPaint: () => {
-                const cvs = document.getElementById('paint-canvas');
-                const ctx = cvs.getContext('2d');
-                ctx.clearRect(0,0, cvs.width, cvs.height);
-            },
-
-            // --- FILE SYSTEM LOGIC ---
-            saveFile: function() {
-                const content = document.getElementById('notepad-area').value;
-                const name = prompt("Filename:", "doc.txt");
-                if(name) {
-                    OS.user.files[name] = content;
-                    OS.save();
-                    alert("Saved!");
-                }
-            },
-            openFile: function(name) {
-                Apps.open('notepad');
-                setTimeout(() => {
-                    document.getElementById('notepad-area').value = OS.user.files[name];
-                }, 200);
-            },
-
-            // --- MEDIA LOGIC ---
-            playMedia: function(input) {
-                const file = input.files[0];
-                const url = URL.createObjectURL(file);
-                const container = document.getElementById('media-container');
-                container.innerHTML = '';
-                if(file.type.startsWith('video')) {
-                    const vid = document.createElement('video');
-                    vid.src = url; vid.controls = true; vid.style.width = '100%';
-                    container.appendChild(vid);
-                } else {
-                    const aud = document.createElement('audio');
-                    aud.src = url; aud.controls = true;
-                    container.appendChild(aud);
-                }
-            },
-
-            // --- GAME LOGIC ---
-            generateGameCard: (title, url, img) => {
-                // Returns a clickable card that opens the game in a new window
-                // Note: We use onclick attribute which calls window.open or internal WM
-                return `
-                <div style="background:#222; border-radius:8px; overflow:hidden; cursor:pointer;" onclick="WM.create('${title.replace(/\s/g,'')}', '${title}', '<iframe src=\\'${url}\\'></iframe>', 900, 600)">
-                    <img src="${img}" style="width:100%; height:80px; object-fit:cover;">
-                    <div style="padding:5px; font-size:12px; font-weight:bold;">${title}</div>
-                </div>`;
+            try {
+                await registerSW();
+            } catch (err) {
+                console.error("SW Registration Failed", err);
             }
-        };
 
-        // --- INIT ---
-        window.onload = () => OS.init();
+            let processedUrl = url.trim();
+            if (!isUrl(processedUrl)) processedUrl = 'https://www.google.com/search?q=' + processedUrl;
+            else if (!(processedUrl.startsWith('http://') || processedUrl.startsWith('https://'))) processedUrl = 'http://' + processedUrl;
 
+            // Redirect via UV
+            window.location.href = __uv$config.prefix + __uv$config.encodeUrl(processedUrl);
+        }
+
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            await launch(input.value);
+        });
+
+        function isUrl(val = '') {
+            if (/^http(s?):\/\//.test(val) || val.includes('.') && val.substr(0, 1) !== ' ') return true;
+            return false;
+        }
     </script>
 </body>
 </html>
