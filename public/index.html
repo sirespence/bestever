@@ -3,240 +3,191 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ATOM | stargazing 🚀</title>
+    <title>atom</title>
     
     <script src="/uv/uv.bundle.js"></script>
     <script src="/uv/uv.config.js"></script>
     <script>
         if ("serviceWorker" in navigator) {
             window.addEventListener("load", () => {
-                navigator.serviceWorker.register("/uv/sw.js", {
-                    scope: __uv$config.prefix,
-                });
+                navigator.serviceWorker.register("/uv/sw.js", { scope: __uv$config.prefix });
             });
         }
     </script>
 
-    <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@700&family=Space+Grotesk:wght@300;700&display=swap" rel="stylesheet">
-    
     <style>
         :root {
-            --glow: #7000ff; /* cosmic purple */
-            --cyber: #00ffff; /* electric cyan */
-            --hot: #ff00ff; /* neon magenta */
-            --dark: #050208;
-            --glass: rgba(255, 255, 255, 0.05);
+            --accent: #7000ff;
+            --bg: #050208;
         }
 
-        * { box-sizing: border-box; transition: all 0.3s ease; }
-        
-        body, html {
-            margin: 0; padding: 0; height: 100%;
-            background: radial-gradient(circle at center, #1a0b2e 0%, var(--dark) 100%);
-            color: #fff;
-            font-family: 'Space Grotesk', sans-serif;
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            background: var(--bg);
+            background-image: radial-gradient(circle at center, #1a0b2e 0%, #050208 100%);
+            font-family: system-ui, -apple-system, sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
             overflow: hidden;
         }
 
-        /* animated background stars */
-        .star-bg {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: -1; pointer-events: none;
-            background-image: radial-gradient(white, rgba(255,255,255,0) 2px);
-            background-size: 50px 50px;
-            opacity: 0.1;
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 40px;
+            padding: 50px;
+            text-align: center;
+            width: 90%;
+            max-width: 450px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
         }
 
-        /* navigation bar */
-        nav {
-            display: flex; align-items: center; justify-content: space-between;
-            padding: 20px 60px;
-            background: var(--glass);
-            backdrop-filter: blur(20px);
-            border-bottom: 1px solid rgba(112, 0, 255, 0.3);
-            z-index: 100;
+        h1 {
+            font-size: 3rem;
+            margin: 0 0 5px;
+            letter-spacing: -2px;
+            font-weight: 800;
+            background: linear-gradient(to bottom, #fff, #888);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
-        .logo { 
-            font-family: 'Syncopate'; font-size: 1.8rem; 
-            letter-spacing: 10px; color: var(--cyber);
-            text-shadow: 0 0 15px var(--glow);
-        }
-
-        .tabs { display: flex; gap: 40px; }
-        .tab { 
-            cursor: pointer; text-transform: uppercase; font-weight: 700; 
-            letter-spacing: 2px; color: #888; 
-        }
-        .tab:hover, .tab.active { color: var(--cyber); text-shadow: 0 0 10px var(--cyber); }
-
-        /* main container screens */
-        .screen {
-            height: calc(100vh - 80px);
-            display: none; flex-direction: column;
-            align-items: center; justify-content: center;
-            padding: 40px; overflow-y: auto;
-        }
-        .screen.active { display: flex; }
-
-        /* search bar aesthetics */
-        .search-wrap {
-            width: 100%; max-width: 750px;
-            background: var(--glass);
-            border: 2px solid var(--glow);
-            border-radius: 25px;
-            display: flex; padding: 10px;
-            box-shadow: 0 0 40px rgba(112, 0, 255, 0.2);
+        .input-group {
+            margin-top: 30px;
+            position: relative;
         }
 
         input {
-            flex: 1; background: transparent; border: none; outline: none;
-            color: #fff; font-size: 1.1rem; padding: 15px; font-family: 'Space Grotesk';
-        }
-
-        button#launch-btn {
-            background: linear-gradient(45deg, var(--glow), var(--hot));
-            border: none; color: white; padding: 0 40px; border-radius: 18px;
-            font-weight: 900; cursor: pointer;
-        }
-        button#launch-btn:hover { transform: scale(1.05); box-shadow: 0 0 20px var(--hot); }
-
-        /* arcade grid */
-        .grid {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 25px; width: 100%; max-width: 1100px;
-        }
-
-        .card {
-            background: var(--glass); border-radius: 25px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 40px 20px; text-align: center; cursor: pointer;
-            position: relative;
-        }
-        .card:hover { 
-            border-color: var(--cyber); transform: translateY(-10px); 
-            background: rgba(112, 0, 255, 0.1);
-        }
-        .card h2 { margin: 15px 0 5px; color: var(--cyber); font-size: 1.2rem; }
-        .card p { opacity: 0.5; font-size: 0.8rem; margin: 0; }
-        .card .emoji { font-size: 45px; }
-        .card .badge {
-            position: absolute; top: 15px; right: 15px;
-            background: var(--hot); font-size: 10px; padding: 4px 10px;
-            border-radius: 10px; font-weight: 900;
+            padding: 18px 25px;
+            border-radius: 18px;
+            color: white;
+            font-size: 1rem;
+            outline: none;
+            box-sizing: border-box;
+            transition: border 0.3s;
         }
 
-        /* the portal viewport */
-        #viewport {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: 1000; display: none; background: #000;
+        input:focus {
+            border-color: rgba(255, 255, 255, 0.3);
         }
-        iframe { width: 100%; height: 100%; border: none; }
-        .exit-btn {
-            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
-            z-index: 1001; background: #ff0055; color: white;
-            padding: 12px 35px; border-radius: 50px; font-weight: 900;
-            cursor: pointer; box-shadow: 0 0 20px #ff0055; border: none;
+
+        .actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 15px;
+        }
+
+        button {
+            padding: 16px;
+            border-radius: 16px;
+            border: none;
+            font-weight: 700;
+            cursor: pointer;
+            transition: opacity 0.2s, transform 0.2s;
+        }
+
+        .btn-roblox {
+            background: white;
+            color: black;
+        }
+
+        .btn-search {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        button:hover {
+            opacity: 0.85;
+            transform: scale(1.02);
+        }
+
+        #viewport {
+            position: fixed;
+            inset: 0;
+            display: none;
+            background: black;
+            z-index: 1000;
+        }
+
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .close-btn {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 12px 30px;
+            border-radius: 100px;
+            cursor: pointer;
+            font-weight: 600;
         }
     </style>
 </head>
 <body>
 
-    <div class="star-bg"></div>
-
-    <nav>
-        <div class="logo">ATOM</div>
-        <div class="tabs">
-            <div class="tab active" onclick="showTab('nexus')">Nexus</div>
-            <div class="tab" onclick="showTab('nebula')">Arcade</div>
-        </div>
-    </nav>
-
-    <div id="nexus" class="screen active">
-        <h1 style="font-family:'Syncopate'; font-size: 3.5rem; margin: 0;">STATION <span style="color:var(--hot)">X</span></h1>
-        <p style="opacity: 0.4; margin-bottom: 40px; letter-spacing: 3px;">splitting the atom of the web...</p>
-        <div class="search-wrap">
-            <input type="text" id="urlInput" placeholder="enter coordinates or search brave...">
-            <button id="launch-btn">LAUNCH</button>
-        </div>
-    </div>
-
-    <div id="nebula" class="screen">
-        <h1 style="font-family:'Syncopate'; font-size: 1.5rem; margin-bottom: 40px;">THE NEBULA ARCADE</h1>
-        <div class="grid">
-            <div class="card" onclick="openGame('https://education-edition.github.io/roblox/')">
-                <div class="badge">RESURRECTED</div>
-                <div class="emoji">🟥</div>
-                <h2>ROBLOX</h2>
-                <p>mirrored github mobile client</p>
-            </div>
-            <div class="card" onclick="openGame('https://supermario-game.com/')">
-                <div class="emoji">🍄</div>
-                <h2>MARIO</h2>
-                <p>super mario bros (unblocked)</p>
-            </div>
-            <div class="card" onclick="openGame('https://sonic-js.com/')">
-                <div class="emoji">🦔</div>
-                <h2>SONIC</h2>
-                <p>unlocked hedgehog engine</p>
-            </div>
-            <div class="card" onclick="openGame('https://poki.com')">
-                <div class="emoji">🎮</div>
-                <h2>POKI</h2>
-                <p>10,000+ browser hits</p>
+    <div class="glass-panel">
+        <h1>atom</h1>
+        
+        <div class="input-group">
+            <input type="text" id="mainInput" placeholder="url or search...">
+            <div class="actions">
+                <button class="btn-roblox" onclick="launch('https://roblox.com')">roblox</button>
+                <button class="btn-search" onclick="launch(document.getElementById('mainInput').value)">launch</button>
             </div>
         </div>
     </div>
 
     <div id="viewport">
         <iframe id="uvFrame"></iframe>
-        <button class="exit-btn" onclick="killSession()">EXIT SESSION ⚡</button>
+        <button class="close-btn" onclick="exit()">exit session</button>
     </div>
 
     <script>
         const frame = document.getElementById('uvFrame');
         const vp = document.getElementById('viewport');
-        const input = document.getElementById('urlInput');
+        const input = document.getElementById('mainInput');
 
-        // tab switching logic
-        function showTab(id) {
-            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-            event.currentTarget.classList.add('active');
-            vp.style.display = 'none'; // hide viewport if switching tabs
-        }
-
-        // url processing logic (the brain)
-        function process(val) {
+        function launch(val) {
             let url = val.trim();
             if (!url) return;
 
-            // if it's not a URL, search Brave (better for proxies than Google)
-            if (!url.includes('.')) {
+            if (url === 'https://roblox.com') {
+                // roblox specific launch
+            } else if (!url.includes('.')) {
+                // if it's not a link, use brave (better for proxies)
                 url = 'https://search.brave.com/search?q=' + encodeURIComponent(url);
             } else if (!url.startsWith('http')) {
                 url = 'https://' + url;
             }
 
-            // run through ultraviolet
             frame.src = __uv$config.prefix + __uv$config.encodeUrl(url);
             vp.style.display = 'block';
-            console.log("🚀 blasting off to: " + url);
         }
 
-        // event listeners
-        document.getElementById('launch-btn').onclick = () => process(input.value);
-        input.onkeydown = (e) => { if (e.key === 'Enter') process(input.value); };
-
-        function openGame(url) {
-            process(url);
-        }
-
-        function killSession() {
+        function exit() {
             vp.style.display = 'none';
             frame.src = 'about:blank';
         }
+
+        input.onkeydown = (e) => { if (e.key === 'Enter') launch(input.value); };
     </script>
 </body>
 </html>
