@@ -1,249 +1,89 @@
-<!DOCTYPE html>
-<html lang="en" class="dark">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Atom</title>
+/* we’re going dark mode or we’re going home */
+body {
+    background: radial-gradient(circle at center, #1a0b2e 0%, #050208 100%);
+    color: #fff;
+    font-family: 'Orbitron', sans-serif;
+    margin: 0;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
 
-  <!-- UV CORE SCRIPTS (exactly as you need) -->
-  <script src="/uv/uv.bundle.js"></script>
-  <script src="/uv/uv.config.js"></script>
-  <script>
-    if ("serviceWorker" in navigator) {
-      window.addEventListener("load", () => {
-        navigator.serviceWorker.register("/uv/sw.js", {
-          scope: __uv$config.prefix || '/uv/',
-        }).then(reg => console.log('Atom SW Active'))
-          .catch(err => console.error('SW failed', err));
-      });
-    }
-  </script>
+.main-container {
+    width: 90%;
+    max-width: 1000px;
+    text-align: center;
+}
 
-  <style>
-    :root {
-      --void: #0a001f;
-      --neon-cyan: #00f0ff;
-      --neon-purple: #c026d3;
-      --neon-pink: #ff00aa;
-      --glow: rgba(0, 240, 255, 0.25);
-    }
+.logo {
+    font-size: 3rem;
+    letter-spacing: 10px;
+    background: linear-gradient(to right, #ff00ff, #7000ff, #00ffff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 0 20px rgba(112, 0, 255, 0.5);
+    margin-bottom: 20px;
+    animation: pulse 2s infinite alternate;
+}
 
-    * { margin:0; padding:0; box-sizing:border-box; }
-    body {
-      font-family: 'Inter', system-ui, sans-serif;
-      background: var(--void);
-      color: #e0f2fe;
-      min-height: 100vh;
-      overflow: hidden;
-      position: relative;
-    }
+.input-group {
+    margin-bottom: 30px;
+    display: flex;
+    gap: 10px;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 10px;
+    border-radius: 50px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+}
 
-    /* Trippy space background */
-    body::before {
-      content: '';
-      position: fixed;
-      inset: 0;
-      background: 
-        radial-gradient(circle at 20% 30%, rgba(192,38,211,0.15) 0%, transparent 50%),
-        radial-gradient(circle at 80% 70%, rgba(255,0,170,0.15) 0%, transparent 50%),
-        radial-gradient(circle at 50% 20%, rgba(0,240,255,0.12) 0%, transparent 60%);
-      animation: nebulaDrift 80s linear infinite;
-      z-index: -2;
-    }
+input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: #00ffff;
+    padding: 10px 20px;
+    font-size: 1rem;
+}
 
-    @keyframes nebulaDrift {
-      0% { transform: translate(0, 0); }
-      100% { transform: translate(30px, -30px); }
-    }
+button {
+    background: #7000ff;
+    border: none;
+    padding: 10px 25px;
+    border-radius: 30px;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+    box-shadow: 0 0 10px #7000ff;
+}
 
-    /* Floating energy orbs */
-    .orb {
-      position: absolute;
-      border-radius: 50%;
-      filter: blur(60px);
-      opacity: 0.25;
-      animation: floatOrb 25s ease-in-out infinite;
-      z-index: -1;
-    }
-    .orb1 { width: 600px; height: 600px; background: var(--neon-cyan); top: -10%; left: -15%; animation-delay: 0s; }
-    .orb2 { width: 800px; height: 800px; background: var(--neon-purple); bottom: -20%; right: -10%; animation-delay: -12s; }
-    .orb3 { width: 500px; height: 500px; background: var(--neon-pink); top: 40%; right: -20%; animation-delay: -7s; }
+button:hover {
+    background: #ff00ff;
+    box-shadow: 0 0 20px #ff00ff;
+    transform: scale(1.05);
+}
 
-    @keyframes floatOrb {
-      0%, 100% { transform: translate(0, 0) scale(1); }
-      50% { transform: translate(40px, -60px) scale(1.15); }
-    }
+.iframe-wrapper {
+    position: relative;
+    border-radius: 20px;
+    overflow: hidden;
+    border: 2px solid #7000ff;
+    box-shadow: 0 0 30px rgba(112, 0, 255, 0.3);
+    height: 60vh;
+}
 
-    .container { 
-      max-width: 1100px; 
-      margin: 0 auto; 
-      padding: 2rem; 
-      position: relative; 
-      z-index: 2; 
-    }
+.iframeWindow {
+    width: 100%;
+    height: 100%;
+    border: none;
+    background: #fff; /* white so you can actually see the sites lol */
+}
 
-    header {
-      text-align: center;
-      padding: 5rem 0 6rem;
-    }
-
-    h1 {
-      font-family: 'Orbitron', monospace;
-      font-size: clamp(5rem, 12vw, 9rem);
-      font-weight: 700;
-      letter-spacing: -0.1em;
-      background: linear-gradient(90deg, #00f0ff, #c026d3, #ff00aa, #00f0ff);
-      -webkit-background-clip: text;
-      background-clip: text;
-      -webkit-text-fill-color: transparent;
-      text-shadow: 0 0 80px var(--glow);
-      animation: glitch 3s infinite, titlePulse 6s ease-in-out infinite;
-    }
-
-    @keyframes glitch {
-      0%, 100% { transform: translate(0); }
-      20% { transform: translate(-3px, 3px); }
-      40% { transform: translate(3px, -3px); }
-      60% { transform: translate(-2px, 2px); }
-    }
-
-    @keyframes titlePulse {
-      0%, 100% { filter: brightness(1); }
-      50% { filter: brightness(1.4); }
-    }
-
-    .tagline {
-      font-size: 1.6rem;
-      margin-top: 1rem;
-      opacity: 0.85;
-      letter-spacing: 0.15em;
-      text-shadow: 0 0 20px rgba(0,240,255,0.6);
-    }
-
-    .search-container {
-      max-width: 720px;
-      margin: 4rem auto;
-      position: relative;
-    }
-
-    input {
-      width: 100%;
-      padding: 1.6rem 2rem 1.6rem 5.5rem;
-      font-size: 1.35rem;
-      background: rgba(15, 23, 42, 0.75);
-      border: 2px solid rgba(0,240,255,0.3);
-      border-radius: 9999px;
-      color: white;
-      outline: none;
-      backdrop-filter: blur(20px);
-      box-shadow: 0 0 40px rgba(0,240,255,0.15);
-      transition: all 0.4s;
-    }
-
-    input:focus {
-      border-color: #00f0ff;
-      box-shadow: 0 0 60px rgba(0,240,255,0.4);
-      transform: scale(1.02);
-    }
-
-    .quick-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 1.8rem;
-      margin-top: 5rem;
-    }
-
-    .card {
-      background: rgba(15, 23, 42, 0.6);
-      border: 1px solid rgba(0,240,255,0.25);
-      border-radius: 20px;
-      padding: 2.2rem 1.5rem;
-      text-align: center;
-      transition: all 0.5s cubic-bezier(0.23,1,0.32,1);
-      cursor: pointer;
-      backdrop-filter: blur(12px);
-    }
-
-    .card:hover {
-      transform: translateY(-15px) scale(1.05);
-      border-color: #00f0ff;
-      box-shadow: 0 0 50px rgba(0,240,255,0.3);
-    }
-
-    .card h3 {
-      font-size: 1.65rem;
-      margin-bottom: 0.5rem;
-      color: #00f0ff;
-      text-shadow: 0 0 20px rgba(0,240,255,0.6);
-    }
-
-    .status {
-      text-align: center;
-      margin-top: 3rem;
-      font-size: 1.3rem;
-      color: #00f0ff;
-      text-shadow: 0 0 20px rgba(0,240,255,0.7);
-      opacity: 0;
-      transition: opacity 0.6s;
-    }
-
-    .status.show { opacity: 1; }
-  </style>
-</head>
-<body>
-  <div class="orb orb1"></div>
-  <div class="orb orb2"></div>
-  <div class="orb orb3"></div>
-
-  <div class="container">
-    <header>
-      <h1>ATOM</h1>
-      <p class="tagline">ENTER THE VOID</p>
-    </header>
-
-    <div class="search-container">
-      <input type="text" id="url" placeholder="ENTER DESTINATION..." autocomplete="off">
-    </div>
-
-    <div class="quick-grid">
-      <div class="card" onclick="quick('https://www.youtube.com')"><h3>YOUTUBE</h3><p>UNFILTERED WAVES</p></div>
-      <div class="card" onclick="quick('https://piped.video')"><h3>PIPED</h3><p>SHADOW REALM VIDEO</p></div>
-      <div class="card" onclick="quick('https://sonic-mania-online.com')"><h3>SONIC MANIA</h3><p>CHAOS DIMENSION</p></div>
-    </div>
-
-    <div id="status" class="status"></div>
-  </div>
-
-  <script>
-    const PROXY_PREFIX = '/uv/';   // ← Change only if your fork uses a different prefix
-
-    function showStatus(msg) {
-      const el = document.getElementById('status');
-      el.textContent = msg;
-      el.classList.add('show');
-      setTimeout(() => el.classList.remove('show'), 4500);
-    }
-
-    function go() {
-      let u = document.getElementById('url').value.trim();
-      if (!u) return showStatus('ENTER SOMETHING...');
-      if (!u.startsWith('http')) u = 'https://' + u;
-      showStatus('ENTERING THE VOID...');
-      window.open(PROXY_PREFIX + u, '_blank');
-    }
-
-    function quick(url) {
-      showStatus('JUMPING...');
-      window.open(PROXY_PREFIX + url, '_blank');
-    }
-
-    // Enter key support
-    document.getElementById('url').addEventListener('keypress', e => {
-      if (e.key === 'Enter') go();
-    });
-
-    // Auto-focus
-    document.getElementById('url').focus();
-  </script>
-</body>
-</html>
+@keyframes pulse {
+    from { transform: scale(1); opacity: 0.8; }
+    to { transform: scale(1.02); opacity: 1; }
+}
