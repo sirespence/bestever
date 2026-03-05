@@ -3,604 +3,454 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AtomOS Aero | Ultimate Edition</title>
+    <title>AtomOS | Metro</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* --- FRUTIGER AERO THEME VARIABLES --- */
+        /* --- METRO / FRUTIGER METRO VARIABLES --- */
         :root {
-            --glass-border: rgba(255, 255, 255, 0.5);
-            --glass-highlight: rgba(255, 255, 255, 0.2);
-            --glass-shadow: 0 5px 15px rgba(0,0,0,0.4);
-            --win-bg: rgba(20, 30, 45, 0.75);
-            --taskbar-bg: linear-gradient(180deg, rgba(30,50,70,0.85) 0%, rgba(10,20,30,0.95) 100%);
-            --title-grad: linear-gradient(180deg, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.2) 45%, rgba(255,255,255,0.05) 50%, rgba(255,255,255,0.1) 100%);
-            --gloss-overlay: linear-gradient(180deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.05) 50%, transparent 50%, transparent 100%);
-            --font-main: 'Segoe UI', Tahoma, sans-serif;
+            --metro-blue: #2d89ef;
+            --metro-dark: #1d1d1d;
+            --metro-purple: #603cba;
+            --metro-green: #00a300;
+            --metro-orange: #e3a21a;
+            --metro-red: #ee1111;
+            --glass-taskbar: rgba(0, 0, 0, 0.75);
+            --font-light: 'Segoe UI Light', 'Segoe UI', sans-serif;
+            --font-norm: 'Segoe UI', sans-serif;
         }
 
         * { box-sizing: border-box; user-select: none; outline: none; }
         body {
             margin: 0; padding: 0; height: 100vh; overflow: hidden;
-            font-family: var(--font-main);
-            background-color: #000;
-            background-size: cover; background-position: center;
-            transition: background-image 0.5s ease;
+            font-family: var(--font-norm);
+            background: #0f0f0f url('https://images.unsplash.com/photo-1542831371-29b0f74f9713?q=80&w=2070&auto=format&fit=crop') center/cover no-repeat;
         }
 
-        /* --- BOOT & LOGIN SCREENS --- */
-        #os-layer { position: fixed; inset: 0; z-index: 10; display: none; }
+        /* --- LOCK SCREEN --- */
+        #lock-screen {
+            position: fixed; inset: 0; z-index: 10000;
+            background: url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=2070') center/cover;
+            display: flex; flex-direction: column; justify-content: flex-end; padding: 50px;
+            color: white; transition: transform 0.5s ease-in-out;
+        }
+        #lock-screen.slide-up { transform: translateY(-100%); }
         
-        #boot-screen, #login-screen {
-            position: fixed; inset: 0; background: #000; z-index: 9999;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            color: white;
-        }
+        .lock-time { font-size: 90px; font-weight: 300; font-family: var(--font-light); line-height: 1; }
+        .lock-date { font-size: 30px; font-weight: 300; margin-top: 10px; opacity: 0.9; }
 
-        .boot-logo {
-            font-size: 60px; font-weight: 300; letter-spacing: -2px;
-            background: linear-gradient(to bottom, #fff, #999);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            text-shadow: 0 0 20px rgba(255,255,255,0.5);
-            animation: pulse 2s infinite;
+        /* --- START SCREEN (TILES) --- */
+        #start-screen {
+            position: fixed; inset: 0; z-index: 9000;
+            background: rgba(16, 16, 30, 0.95);
+            backdrop-filter: blur(10px);
+            display: flex; flex-direction: column; padding: 60px 80px;
+            transform: scale(1.1) opacity(0); transition: 0.3s cubic-bezier(0.1, 0.9, 0.2, 1);
+            pointer-events: none; opacity: 0;
+            overflow-x: auto;
         }
+        #start-screen.active { transform: scale(1); opacity: 1; pointer-events: auto; }
 
-        .loader-ring {
-            width: 40px; height: 40px; border: 4px solid #333; border-top: 4px solid #00d2ff;
-            border-radius: 50%; margin-top: 20px; animation: spin 1s linear infinite;
-        }
+        .start-header { color: white; font-size: 40px; font-family: var(--font-light); margin-bottom: 30px; }
+        .user-block { position: absolute; top: 40px; right: 80px; display: flex; align-items: center; gap: 15px; color: white; cursor: pointer; }
+        .user-img { width: 45px; height: 45px; background: #ddd; border-radius: 50%; }
 
-        #login-box {
-            background: rgba(255,255,255,0.1); backdrop-filter: blur(10px);
-            padding: 40px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.2);
-            text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        .tile-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; width: 100%; }
+        
+        .tile {
+            height: 140px; position: relative; cursor: pointer;
+            background: var(--metro-blue); color: white;
+            display: flex; flex-direction: column; justify-content: flex-end; padding: 10px;
+            transition: transform 0.1s; border: 2px solid transparent;
         }
-        .user-avatar {
-            width: 100px; height: 100px; background: #ccc; border-radius: 5px; margin: 0 auto 15px;
-            border: 2px solid white; box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-            background-size: cover;
-        }
-        .login-input {
-            padding: 8px; border-radius: 5px; border: 1px solid #555; width: 200px;
-            margin-top: 10px; text-align: center;
-        }
-        .login-btn {
-            margin-top: 10px; padding: 5px 20px; cursor: pointer;
-            background: linear-gradient(180deg, #4facfe 0%, #00f2fe 100%);
-            border: none; border-radius: 4px; color: #000; font-weight: bold;
-        }
+        .tile:hover { border-color: rgba(255,255,255,0.4); z-index: 2; transform: scale(1.02); }
+        .tile:active { transform: scale(0.98); }
+        .tile i { font-size: 40px; margin: auto; }
+        .tile span { font-size: 14px; font-weight: 500; }
+        
+        /* Tile Colors */
+        .tile.wide { grid-column: span 2; background: var(--metro-purple); }
+        .tile.orange { background: var(--metro-orange); }
+        .tile.green { background: var(--metro-green); }
+        .tile.red { background: var(--metro-red); }
 
         /* --- DESKTOP --- */
-        #desktop {
-            position: absolute; inset: 0; bottom: 45px;
-            padding: 20px; display: flex; flex-direction: column; flex-wrap: wrap; gap: 20px;
-            align-content: flex-start;
-        }
-
-        .d-icon {
-            width: 74px; text-align: center; cursor: pointer; color: white;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.9); transition: 0.2s;
-            display: flex; flex-direction: column; align-items: center;
-        }
-        .d-icon:hover { background: rgba(255,255,255,0.1); border-radius: 5px; box-shadow: inset 0 0 10px rgba(255,255,255,0.2); }
-        .d-icon:active { transform: scale(0.95); }
-
-        .icon-img {
-            width: 54px; height: 54px; 
-            /* Skeuomorphic Glass Container */
-            background: linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(200,225,255,0.6) 100%);
-            border: 1px solid white; border-radius: 12px;
-            box-shadow: 0 5px 10px rgba(0,0,0,0.3);
-            display: flex; align-items: center; justify-content: center;
-            font-size: 28px; color: #333; position: relative; overflow: hidden;
-        }
-        /* Gloss Shine */
-        .icon-img::after {
-            content: ''; position: absolute; top:0; left:0; right:0; height: 50%;
-            background: linear-gradient(180deg, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0.1) 100%);
-            border-bottom: 1px solid rgba(255,255,255,0.4);
-        }
-
-        .icon-label { margin-top: 6px; font-size: 12px; font-weight: 500; line-height: 1.2; }
-
-        /* --- WINDOWS (AERO GLASS) --- */
+        #desktop { position: absolute; inset: 0; z-index: 10; }
+        
+        /* --- WINDOWS (METRO AERO) --- */
         .window {
-            position: absolute; min-width: 400px; min-height: 300px;
-            background: var(--win-bg);
-            backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
-            border: 1px solid rgba(255,255,255,0.4);
-            border-radius: 8px;
-            box-shadow: inset 0 1px 0 rgba(255,255,255,0.5), 0 20px 50px rgba(0,0,0,0.6);
+            position: absolute; background: white;
+            box-shadow: 0 0 15px rgba(0,0,0,0.4);
             display: flex; flex-direction: column;
-            opacity: 0; transform: scale(0.95); transition: opacity 0.2s, transform 0.2s;
-            visibility: hidden; overflow: hidden;
+            border: 1px solid #2d89ef;
+            opacity: 0; transform: scale(0.95); transition: 0.2s; visibility: hidden;
+            min-width: 300px; min-height: 200px; resize: both; overflow: hidden;
         }
         .window.open { opacity: 1; transform: scale(1); visibility: visible; }
-        .window.maximized { top: 0!important; left: 0!important; width: 100%!important; height: calc(100% - 45px)!important; border-radius: 0; }
+        .window.maximized { top:0!important; left:0!important; width:100%!important; height:calc(100% - 40px)!important; }
 
-        .title-bar {
-            height: 34px; background: var(--title-grad);
-            display: flex; align-items: center; justify-content: space-between;
+        .win-header {
+            height: 32px; background: white; display: flex; align-items: center; justify-content: space-between;
             padding: 0 10px; cursor: default;
-            border-bottom: 1px solid rgba(0,0,0,0.2);
-            text-shadow: 0 0 5px rgba(255,255,255,0.8);
         }
-        .win-title { font-size: 13px; color: white; font-weight: 600; text-shadow: 0 0 5px #000; }
-        
-        .win-controls { display: flex; gap: 5px; }
-        .win-btn {
-            width: 26px; height: 20px; border-radius: 3px;
-            border: 1px solid rgba(0,0,0,0.3);
-            box-shadow: inset 0 1px 0 rgba(255,255,255,0.6);
-            cursor: pointer; position: relative;
-        }
-        .btn-min { background: linear-gradient(180deg, #6ba5d6 0%, #1c4e78 100%); }
-        .btn-max { background: linear-gradient(180deg, #6ba5d6 0%, #1c4e78 100%); }
-        .btn-close { background: linear-gradient(180deg, #e47b7b 0%, #911e1e 100%); border-color: #520000; }
-        .win-btn:hover { filter: brightness(1.2); }
+        .win-title { font-size: 13px; font-weight: 600; text-transform: uppercase; color: #555; }
+        .win-controls { display: flex; gap: 2px; height: 100%; }
+        .win-btn { width: 34px; height: 100%; border: none; background: transparent; font-family: "Segoe UI Symbol"; cursor: pointer; font-size: 12px; transition: 0.2s; }
+        .win-btn:hover { background: #eee; }
+        .btn-close:hover { background: #e81123; color: white; }
 
-        .win-content { flex: 1; background: #f5f5f5; position: relative; margin: 0 4px 4px 4px; border: 1px solid #555; }
-        iframe { width: 100%; height: 100%; border: none; background: white; }
+        .win-content { flex: 1; position: relative; background: #f0f0f0; border-top: 1px solid #ccc; }
+        
+        /* --- BROWSER SPECIFIC --- */
+        .browser-bar { padding: 8px; background: #f2f2f2; display: flex; gap: 10px; border-bottom: 1px solid #ddd; }
+        .url-input { flex: 1; padding: 5px 10px; border: 1px solid #a0a0a0; font-family: var(--font-norm); }
+        .proxy-status { font-size: 11px; color: green; display: flex; align-items: center; gap: 5px; }
 
         /* --- TASKBAR --- */
         #taskbar {
-            position: absolute; bottom: 0; width: 100%; height: 45px;
-            background: var(--taskbar-bg);
-            border-top: 1px solid rgba(255,255,255,0.4);
-            box-shadow: inset 0 1px 0 rgba(255,255,255,0.2);
-            display: flex; align-items: center; padding: 0 5px; z-index: 9000;
-            backdrop-filter: blur(10px);
+            position: absolute; bottom: 0; width: 100%; height: 40px;
+            background: var(--glass-taskbar); backdrop-filter: blur(10px);
+            display: flex; align-items: center; z-index: 9999;
         }
+        .start-btn {
+            width: 48px; height: 100%; display: flex; align-items: center; justify-content: center;
+            cursor: pointer; transition: 0.2s;
+        }
+        .start-btn:hover { background: rgba(255,255,255,0.1); }
+        .start-btn i { color: white; font-size: 20px; }
 
-        #start-orb {
-            width: 38px; height: 38px; margin-right: 10px;
-            background: radial-gradient(circle at 50% 50%, #1e5799 0%, #2989d8 50%, #207cca 51%, #7db9e8 100%);
-            border-radius: 50%; border: 1px solid #000;
-            box-shadow: 0 0 10px rgba(0,198,255,0.5), inset 0 0 5px rgba(255,255,255,0.5);
+        .task-list { display: flex; height: 100%; }
+        .task-app {
+            width: 48px; height: 100%; display: flex; align-items: center; justify-content: center;
             cursor: pointer; position: relative; transition: 0.2s;
         }
-        #start-orb:hover { filter: brightness(1.2); box-shadow: 0 0 15px rgba(0,255,255,0.8); }
-        #start-orb::after {
-            content:''; position: absolute; top:0; left:5px; right:5px; height: 18px;
-            background: linear-gradient(180deg, rgba(255,255,255,0.8) 0%, transparent 100%);
-            border-radius: 20px 20px 0 0;
+        .task-app:hover { background: rgba(255,255,255,0.1); }
+        .task-app.active { background: rgba(255,255,255,0.2); border-bottom: 3px solid var(--metro-blue); }
+        .task-app img { width: 24px; height: 24px; }
+        .task-app i { color: #fff; font-size: 20px; }
+
+        #charms {
+            position: fixed; top: 0; right: 0; bottom: 0; width: 100px;
+            display: flex; flex-direction: column; justify-content: center; gap: 30px;
+            background: rgba(0,0,0,0.9); z-index: 10001;
+            transform: translateX(100%); transition: 0.2s; padding-left: 20px;
         }
-
-        .task-item {
-            min-width: 140px; height: 36px;
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(255,255,255,0.1); border-radius: 4px;
-            margin-right: 5px; padding: 0 8px;
-            display: flex; align-items: center; gap: 8px;
-            color: #eee; font-size: 12px; cursor: pointer;
-            box-shadow: inset 0 0 5px rgba(0,0,0,0.3);
-            transition: 0.1s;
-        }
-        .task-item.active {
-            background: linear-gradient(180deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0.05) 100%);
-            border-color: rgba(255,255,255,0.4);
-            box-shadow: inset 0 0 10px rgba(255,255,255,0.2), 0 0 5px rgba(255,255,255,0.2);
-            color: #fff; text-shadow: 0 0 5px #fff;
-        }
-
-        #tray { margin-left: auto; display: flex; align-items: center; gap: 10px; color: white; font-size: 12px; padding-right: 10px; text-shadow: 0 1px 2px black; }
-
-        /* --- START MENU --- */
-        #start-menu {
-            position: absolute; bottom: 50px; left: 5px;
-            width: 350px; height: 450px;
-            background: rgba(20, 30, 45, 0.95);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255,255,255,0.3); border-radius: 8px 8px 0 0;
-            box-shadow: 0 0 20px rgba(0,0,0,0.5);
-            z-index: 9001; display: none; flex-direction: column;
-        }
-        #start-menu.show { display: flex; animation: slideUp 0.2s ease-out; }
-
-        .start-header { padding: 15px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid rgba(255,255,255,0.1); }
-        .start-user-img { width: 40px; height: 40px; border-radius: 4px; border: 2px solid rgba(255,255,255,0.5); background-size: cover; }
-        
-        .start-body { flex: 1; display: flex; }
-        .start-left { flex: 60%; padding: 10px; display: flex; flex-direction: column; gap: 5px; }
-        .start-right { flex: 40%; background: rgba(255,255,255,0.05); padding: 10px; border-left: 1px solid rgba(255,255,255,0.1); }
-
-        .menu-link {
-            padding: 8px; color: white; display: flex; align-items: center; gap: 10px;
-            cursor: pointer; border-radius: 4px; font-size: 13px;
-        }
-        .menu-link:hover { background: linear-gradient(90deg, rgba(255,255,255,0.1) 0%, transparent 100%); border: 1px solid rgba(255,255,255,0.1); }
-
-        /* --- CONTEXT MENU --- */
-        #context-menu {
-            position: fixed; background: #f0f0f0; border: 1px solid #999;
-            box-shadow: 2px 2px 5px rgba(0,0,0,0.2); width: 150px;
-            z-index: 9999; display: none; flex-direction: column;
-        }
-        .ctx-item { padding: 8px 15px; font-size: 12px; cursor: pointer; color: #333; }
-        .ctx-item:hover { background: #4facfe; color: white; }
-
-        @keyframes spin { 100% { transform: rotate(360deg); } }
-        @keyframes pulse { 50% { opacity: 0.5; } }
-        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        #charms.show { transform: translateX(0); }
+        .charm-icon { color: white; font-size: 24px; cursor: pointer; opacity: 0.7; transition: 0.2s; }
+        .charm-icon:hover { opacity: 1; transform: scale(1.1); }
 
     </style>
 </head>
-<body>
+<body onclick="checkActivity()">
 
-    <!-- BOOT SEQUENCE -->
-    <div id="boot-screen">
-        <div class="boot-logo">Atom<span style="font-weight:600; color:#00d2ff;">OS</span></div>
-        <div class="loader-ring"></div>
-        <div style="margin-top: 10px; font-size: 12px; color: #888;">Initializing Kernel...</div>
+    <!-- LOCK SCREEN -->
+    <div id="lock-screen" onclick="unlock()">
+        <div class="lock-time" id="lock-clock">12:00</div>
+        <div class="lock-date" id="lock-date">Thursday, March 5</div>
+        <div style="font-size:14px; margin-top:20px;">Click or Swipe Up to Unlock</div>
     </div>
 
-    <!-- LOGIN SCREEN -->
-    <div id="login-screen" style="display:none;">
-        <div id="login-box">
-            <div class="user-avatar" id="login-avatar"></div>
-            <h2 id="login-username" style="margin:0; text-shadow:0 2px 4px black;">User</h2>
-            <div id="setup-form" style="display:none;">
-                <input type="text" id="new-user" placeholder="Create Username" class="login-input">
-                <br>
-                <input type="text" id="new-bg" placeholder="Wallpaper URL (Optional)" class="login-input">
-                <br>
-                <button class="login-btn" onclick="Auth.createAccount()">Create OS</button>
+    <!-- START SCREEN -->
+    <div id="start-screen">
+        <div class="user-block" onclick="Apps.open('settings')">
+            <span id="username-display">User</span>
+            <div class="user-img"></div>
+        </div>
+        <div class="start-header">Start</div>
+        <div class="tile-grid">
+            <div class="tile wide" onclick="Apps.open('browser')">
+                <i class="fa-brands fa-edge"></i>
+                <span>Edge Browser</span>
             </div>
-            <div id="login-form">
-                <button class="login-btn" onclick="Auth.login()" style="margin-top:20px; width:150px;">Log In</button>
-                <div style="margin-top:10px; font-size:11px; cursor:pointer; color:#aaa; text-decoration:underline;" onclick="Auth.reset()">Reset System</div>
+            <div class="tile green" onclick="Apps.open('roblox')">
+                <i class="fa-solid fa-gamepad"></i>
+                <span>Roblox Cloud</span>
+            </div>
+            <div class="tile orange" onclick="Apps.open('explorer')">
+                <i class="fa-solid fa-folder"></i>
+                <span>File Explorer</span>
+            </div>
+            <div class="tile red" onclick="Apps.open('settings')">
+                <i class="fa-solid fa-gear"></i>
+                <span>PC Settings</span>
+            </div>
+            <div class="tile" onclick="Apps.open('notepad')">
+                <i class="fa-solid fa-pen"></i>
+                <span>Notepad</span>
+            </div>
+            <div class="tile" onclick="lock()">
+                <i class="fa-solid fa-lock"></i>
+                <span>Lock</span>
             </div>
         </div>
     </div>
 
-    <!-- MAIN OS INTERFACE -->
-    <div id="os-layer">
-        <!-- Desktop Icons -->
-        <div id="desktop" oncontextmenu="UI.showContext(event)">
-            <div class="d-icon" onclick="Apps.open('browser')">
-                <div class="icon-img" style="color:#0078d7;"><i class="fa-brands fa-chrome"></i></div>
-                <div class="icon-label">Net</div>
-            </div>
-            <div class="d-icon" onclick="Apps.open('notepad')">
-                <div class="icon-img" style="color:#333;"><i class="fa-solid fa-note-sticky"></i></div>
-                <div class="icon-label">Notes</div>
-            </div>
-            <div class="d-icon" onclick="Apps.open('roblox')">
-                <div class="icon-img" style="background: linear-gradient(135deg, #eee 0%, #ccc 100%); color:#cc0000; border-color:#a00;"><i class="fa-solid fa-square"></i></div>
-                <div class="icon-label">Roblox</div>
-            </div>
-            <div class="d-icon" onclick="Apps.open('settings')">
-                <div class="icon-img" style="color:#555;"><i class="fa-solid fa-gear"></i></div>
-                <div class="icon-label">Settings</div>
-            </div>
-            <div class="d-icon" onclick="Apps.open('terminal')">
-                <div class="icon-img" style="background: #111; color:#0f0; border-color:black;"><i class="fa-solid fa-terminal"></i></div>
-                <div class="icon-label">Term</div>
-            </div>
-        </div>
+    <!-- DESKTOP -->
+    <div id="desktop"></div>
 
-        <!-- Taskbar -->
-        <div id="taskbar">
-            <div id="start-orb" onclick="UI.toggleStart()"></div>
-            <div id="task-list" style="display:flex;"></div>
-            <div id="tray">
-                <i class="fa-solid fa-wifi"></i>
-                <i class="fa-solid fa-volume-high"></i>
-                <div id="clock" style="margin-left:5px;">12:00 PM</div>
-            </div>
+    <!-- TASKBAR -->
+    <div id="taskbar">
+        <div class="start-btn" onclick="toggleStart()">
+            <i class="fa-brands fa-windows"></i>
         </div>
+        <div class="task-list" id="task-list"></div>
+        <div style="margin-left: auto; color: white; padding-right: 15px; font-size: 13px;" id="task-clock">12:00 PM</div>
+    </div>
 
-        <!-- Start Menu -->
-        <div id="start-menu">
-            <div class="start-header">
-                <div class="start-user-img" id="start-avatar"></div>
-                <div style="color:white; font-weight:bold; font-size:14px; text-shadow:0 1px 2px black;" id="start-username">User</div>
-            </div>
-            <div class="start-body">
-                <div class="start-left">
-                    <div class="menu-link" onclick="Apps.open('browser')"><i class="fa-brands fa-chrome" style="color:#4facfe"></i> Browser</div>
-                    <div class="menu-link" onclick="Apps.open('notepad')"><i class="fa-solid fa-note-sticky" style="color:#fbc2eb"></i> Notepad</div>
-                    <div class="menu-link" onclick="Apps.open('roblox')"><i class="fa-solid fa-gamepad" style="color:#ff6b6b"></i> Roblox Cloud</div>
-                    <div class="menu-link" onclick="Apps.open('terminal')"><i class="fa-solid fa-terminal"></i> Command</div>
-                </div>
-                <div class="start-right">
-                    <div class="menu-link" onclick="Apps.open('settings')"><b>Control Panel</b></div>
-                    <div class="menu-link">Documents</div>
-                    <div class="menu-link">Pictures</div>
-                    <div style="margin-top:auto;"></div>
-                    <div class="menu-link" onclick="location.reload()" style="background:rgba(255,0,0,0.2); border:1px solid rgba(255,0,0,0.3);">Shut Down</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Context Menu -->
-        <div id="context-menu">
-            <div class="ctx-item" onclick="Apps.open('settings')">Personalize</div>
-            <div class="ctx-item" onclick="location.reload()">Refresh</div>
-            <div class="ctx-item" onclick="Apps.open('notepad')">New Text Doc</div>
-        </div>
+    <!-- CHARMS BAR -->
+    <div id="charms">
+        <i class="fa-solid fa-magnifying-glass charm-icon"></i>
+        <i class="fa-brands fa-windows charm-icon" onclick="toggleStart()"></i>
+        <i class="fa-solid fa-gear charm-icon" onclick="Apps.open('settings')"></i>
     </div>
 
     <script>
-        // --- SYSTEM CORE ---
+        // --- SYSTEM CONFIG ---
         const System = {
+            proxies: [
+                "https://tomp.app/", // Common public proxy
+                "https://cdn.incognito.wiki/",
+                "https://ludicrous.icu/",
+                "https://search.brave.com/search?q=" // Fallback
+            ],
             data: {
-                username: null,
-                wallpaper: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2072',
-                files: {} // Virtual File System
-            },
-            
-            init: function() {
-                const saved = localStorage.getItem('atom_os_v3');
-                if (saved) {
-                    this.data = JSON.parse(saved);
-                    Auth.showLogin();
-                } else {
-                    Auth.showSetup();
-                }
-                
-                // Boot Animation
-                setTimeout(() => {
-                    document.getElementById('boot-screen').style.opacity = 0;
-                    setTimeout(() => document.getElementById('boot-screen').remove(), 1000);
-                    document.getElementById('login-screen').style.display = 'flex';
-                }, 2000);
-            },
-
-            save: function() {
-                localStorage.setItem('atom_os_v3', JSON.stringify(this.data));
-            },
-
-            updateWallpaper: function() {
-                document.body.style.backgroundImage = `url('${this.data.wallpaper}')`;
-                document.getElementById('start-avatar').style.backgroundImage = `url('${this.data.wallpaper}')`; // simplistic avatar
-                document.getElementById('login-avatar').style.backgroundImage = `url('${this.data.wallpaper}')`;
+                username: "Administrator",
+                files: { 'welcome.txt': 'Welcome to AtomOS Metro Edition.' }
             }
         };
 
-        // --- AUTHENTICATION ---
-        const Auth = {
-            showSetup: function() {
-                document.getElementById('login-username').innerText = "Welcome";
-                document.getElementById('setup-form').style.display = 'block';
-                document.getElementById('login-form').style.display = 'none';
-            },
+        // --- CLOCK & LOCK ---
+        function updateTime() {
+            const now = new Date();
+            const time = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            const date = now.toLocaleDateString([], { weekday: 'long', month: 'long', day: 'numeric' });
+            document.getElementById('lock-clock').innerText = time.replace(/\s[AP]M/, '');
+            document.getElementById('lock-date').innerText = date;
+            document.getElementById('task-clock').innerText = time;
+        }
+        setInterval(updateTime, 1000);
+        updateTime();
 
-            showLogin: function() {
-                System.updateWallpaper();
-                document.getElementById('login-username').innerText = System.data.username;
-                document.getElementById('setup-form').style.display = 'none';
-                document.getElementById('login-form').style.display = 'block';
-            },
-
-            createAccount: function() {
-                const user = document.getElementById('new-user').value || 'Admin';
-                const bg = document.getElementById('new-bg').value;
-                
-                System.data.username = user;
-                if(bg) System.data.wallpaper = bg;
-                
-                System.save();
-                this.login();
-            },
-
-            login: function() {
-                document.getElementById('login-screen').style.opacity = 0;
-                setTimeout(() => document.getElementById('login-screen').remove(), 500);
-                document.getElementById('os-layer').style.display = 'block';
-                document.getElementById('start-username').innerText = System.data.username;
-                System.updateWallpaper();
-                Clock.start();
-            },
-
-            reset: function() {
-                if(confirm("Factory Reset AtomOS? This deletes all data.")) {
-                    localStorage.removeItem('atom_os_v3');
-                    location.reload();
-                }
+        function unlock() {
+            document.getElementById('lock-screen').classList.add('slide-up');
+            // Show start screen on first unlock
+            if(!document.getElementById('start-screen').classList.contains('active')) {
+                toggleStart();
             }
-        };
+        }
+        function lock() {
+            document.getElementById('lock-screen').classList.remove('slide-up');
+            document.getElementById('start-screen').classList.remove('active');
+        }
 
         // --- WINDOW MANAGER ---
         const WM = {
             zIndex: 100,
-            activeWin: null,
-
-            open: function(id, title, html, w=800, h=500) {
-                if (document.getElementById('win-' + id)) {
-                    this.focus(id);
-                    return;
-                }
+            open: function(id, title, content) {
+                if(document.getElementById('win-'+id)) return WM.focus(id);
+                
+                // Close Start if open
+                document.getElementById('start-screen').classList.remove('active');
 
                 const win = document.createElement('div');
                 win.className = 'window open';
-                win.id = 'win-' + id;
-                win.style.width = w + 'px';
-                win.style.height = h + 'px';
-                win.style.left = (100 + (Math.random() * 50)) + 'px';
-                win.style.top = (50 + (Math.random() * 50)) + 'px';
+                win.id = 'win-'+id;
+                win.style.width = '800px';
+                win.style.height = '600px';
+                win.style.left = (50 + Math.random()*50) + 'px';
+                win.style.top = (50 + Math.random()*50) + 'px';
                 win.style.zIndex = ++this.zIndex;
 
                 win.innerHTML = `
-                    <div class="title-bar" onmousedown="WM.dragStart(event, '${id}')">
-                        <div class="win-title"><i class="fa-brands fa-windows"></i> ${title}</div>
+                    <div class="win-header" onmousedown="WM.dragStart(event, '${id}')">
+                        <div class="win-title">${title}</div>
                         <div class="win-controls">
-                            <div class="win-btn btn-min" onclick="WM.minimize('${id}')"></div>
-                            <div class="win-btn btn-max" onclick="WM.maximize('${id}')"></div>
-                            <div class="win-btn btn-close" onclick="WM.close('${id}')"></div>
+                            <div class="win-btn" onclick="WM.minimize('${id}')">_</div>
+                            <div class="win-btn" onclick="WM.maximize('${id}')">◻</div>
+                            <div class="win-btn btn-close" onclick="WM.close('${id}')">✕</div>
                         </div>
                     </div>
-                    <div class="win-content">${html}</div>
+                    <div class="win-content">${content}</div>
                 `;
-
-                win.addEventListener('mousedown', () => this.focus(id));
-                document.getElementById('os-layer').appendChild(win);
+                
+                win.addEventListener('mousedown', () => WM.focus(id));
+                document.getElementById('desktop').appendChild(win);
                 this.addTask(id, title);
-                this.focus(id);
             },
-
             close: function(id) {
-                const win = document.getElementById('win-' + id);
-                win.classList.remove('open');
-                setTimeout(() => win.remove(), 200);
-                document.getElementById('task-' + id).remove();
+                document.getElementById('win-'+id).remove();
+                document.getElementById('task-'+id).remove();
             },
-
             focus: function(id) {
-                const win = document.getElementById('win-' + id);
-                if(win) {
-                    win.style.zIndex = ++this.zIndex;
-                    if(win.classList.contains('minimized')) win.classList.remove('minimized'); // Restore
-                    
-                    document.querySelectorAll('.task-item').forEach(t => t.classList.remove('active'));
-                    document.getElementById('task-'+id).classList.add('active');
-                }
+                const win = document.getElementById('win-'+id);
+                if(win) win.style.zIndex = ++this.zIndex;
+                
+                document.querySelectorAll('.task-app').forEach(t => t.classList.remove('active'));
+                document.getElementById('task-'+id)?.classList.add('active');
             },
-
-            minimize: function(id) {
-                document.getElementById('win-'+id).classList.add('minimized');
-                document.getElementById('task-'+id).classList.remove('active');
-            },
-
             maximize: function(id) {
                 document.getElementById('win-'+id).classList.toggle('maximized');
             },
-
+            minimize: function(id) {
+                document.getElementById('win-'+id).classList.remove('open');
+                document.getElementById('task-'+id).classList.remove('active');
+            },
             addTask: function(id, title) {
+                const iconMap = {
+                    'browser': 'fa-edge',
+                    'roblox': 'fa-gamepad',
+                    'explorer': 'fa-folder',
+                    'settings': 'fa-gear',
+                    'notepad': 'fa-pen'
+                };
                 const task = document.createElement('div');
-                task.className = 'task-item active';
-                task.id = 'task-' + id;
-                task.innerHTML = `<i class="fa-solid fa-window-maximize"></i> ${title}`;
-                task.onclick = () => WM.focus(id);
+                task.className = 'task-app active';
+                task.id = 'task-'+id;
+                task.innerHTML = `<i class="fa-brands ${iconMap[id] || 'fa-window-maximize'}"></i>`;
+                task.onclick = () => {
+                    const win = document.getElementById('win-'+id);
+                    if(!win.classList.contains('open')) {
+                        win.classList.add('open');
+                        WM.focus(id);
+                    } else {
+                        WM.focus(id);
+                    }
+                };
                 document.getElementById('task-list').appendChild(task);
             },
-
             dragStart: function(e, id) {
                 if(e.target.closest('.win-controls')) return;
                 const win = document.getElementById('win-'+id);
-                this.focus(id);
-                
+                WM.focus(id);
                 let shiftX = e.clientX - win.getBoundingClientRect().left;
                 let shiftY = e.clientY - win.getBoundingClientRect().top;
-
-                function moveAt(pageX, pageY) {
-                    win.style.left = pageX - shiftX + 'px';
-                    win.style.top = pageY - shiftY + 'px';
+                
+                function move(e) {
+                    win.style.left = e.pageX - shiftX + 'px';
+                    win.style.top = e.pageY - shiftY + 'px';
                 }
-
-                function onMouseMove(event) {
-                    moveAt(event.pageX, event.pageY);
+                function stop() {
+                    document.removeEventListener('mousemove', move);
+                    document.removeEventListener('mouseup', stop);
                 }
-
-                document.addEventListener('mousemove', onMouseMove);
-                document.onmouseup = function() {
-                    document.removeEventListener('mousemove', onMouseMove);
-                    document.onmouseup = null;
-                };
+                document.addEventListener('mousemove', move);
+                document.addEventListener('mouseup', stop);
             }
         };
 
-        // --- APPS & LOGIC ---
+        // --- APPS ---
         const Apps = {
             open: function(app) {
-                UI.closeStart();
                 switch(app) {
                     case 'browser':
-                        const html = `
+                        WM.open('browser', 'Internet', `
                             <div style="display:flex; flex-direction:column; height:100%;">
-                                <div style="padding:5px; background:#e0e0e0; border-bottom:1px solid #999; display:flex; gap:5px;">
-                                    <button onclick="this.closest('.win-content').querySelector('iframe').contentWindow.history.back()">Back</button>
-                                    <select onchange="this.nextElementSibling.nextElementSibling.src=this.value" style="font-size:11px;">
-                                        <option value="https://search.brave.com">Direct</option>
-                                        <option value="https://tomp.app">Ultraviolet</option>
-                                        <option value="https://demo.rammerhead.org">Rammerhead</option>
-                                    </select>
-                                    <input type="text" placeholder="URL..." style="flex:1;" onkeydown="if(event.key=='Enter') this.nextElementSibling.src = this.value.startsWith('http')?this.value:'https://search.brave.com/search?q='+this.value">
+                                <div class="browser-bar">
+                                    <button onclick="Browser.back()">Back</button>
+                                    <button onclick="Browser.reload()">Reload</button>
+                                    <input type="text" id="url-bar" class="url-input" value="https://bing.com" onkeydown="if(event.key=='Enter') Browser.go()">
+                                    <button onclick="Browser.go()">Go</button>
                                 </div>
-                                <iframe src="https://search.brave.com"></iframe>
-                            </div>`;
-                        WM.open('browser', 'Atom Net', html, 900, 600);
+                                <div style="padding:5px; background:#e1e1e1; font-size:11px; display:flex; justify-content:space-between;">
+                                    <span>Proxy Mode: Auto-Detect</span>
+                                    <span style="cursor:pointer; color:blue;" onclick="Browser.tryNextProxy()">Try Next Proxy Server</span>
+                                </div>
+                                <iframe id="browser-frame" src="https://bing.com" style="flex:1; background:white;"></iframe>
+                            </div>
+                        `);
                         break;
-                    
+                    case 'roblox':
+                         WM.open('roblox', 'Roblox', `
+                            <div style="height:100%; display:flex; flex-direction:column;">
+                                <div style="background:#000; color:white; padding:5px; font-size:12px;">Cloud Gaming Wrapper Active</div>
+                                <iframe src="https://www.easyfun.gg/games/roblox.html"></iframe>
+                            </div>
+                         `);
+                         break;
+                    case 'explorer':
+                        let fileHtml = '';
+                        for(let f in System.data.files) {
+                            fileHtml += `<div style="padding:10px; float:left; width:80px; text-align:center; cursor:pointer;" onclick="alert('${System.data.files[f]}')">
+                                <i class="fa-solid fa-file-lines" style="font-size:30px; color:#2d89ef;"></i><br><span style="font-size:12px;">${f}</span>
+                            </div>`;
+                        }
+                        WM.open('explorer', 'File Explorer', `<div style="padding:10px;">${fileHtml}</div>`);
+                        break;
+                    case 'settings':
+                        WM.open('settings', 'PC Settings', `
+                            <div style="padding:20px;">
+                                <h2>Personalize</h2>
+                                <p>Wallpaper URL:</p>
+                                <input type="text" style="width:100%; padding:5px;" onchange="document.body.style.backgroundImage = 'url('+this.value+')'">
+                                <br><br>
+                                <button onclick="localStorage.clear(); location.reload();" style="background:red; color:white; border:none; padding:10px;">Reset PC</button>
+                            </div>
+                        `);
+                        break;
                     case 'notepad':
                         WM.open('notepad', 'Notepad', `
-                            <textarea id="note-area" style="width:100%; height:85%; border:none; padding:10px; resize:none; font-family:monospace;">${System.data.files['doc.txt'] || ''}</textarea>
-                            <div style="height:15%; background:#eee; padding:5px; border-top:1px solid #ccc; text-align:right;">
-                                <button onclick="System.data.files['doc.txt'] = document.getElementById('note-area').value; System.save(); alert('Saved to VFS!');">Save to Disk</button>
-                            </div>
-                        `, 500, 400);
-                        break;
-                    
-                    case 'roblox':
-                        // Fallback to a math site if cloud is blocked
-                        WM.open('roblox', 'Roblox Cloud', `
-                            <iframe src="https://www.easyfun.gg/games/roblox.html"></iframe>
-                        `, 950, 600);
-                        break;
-
-                    case 'settings':
-                        WM.open('settings', 'Control Panel', `
-                            <div style="padding:20px; color:#333;">
-                                <h3>Personalization</h3>
-                                <p>Paste Image URL for Wallpaper:</p>
-                                <input type="text" style="width:100%; margin-bottom:10px;" onchange="System.data.wallpaper=this.value; System.updateWallpaper(); System.save();">
-                                <hr>
-                                <h3>System</h3>
-                                <p>Storage used: ${JSON.stringify(System.data).length} bytes</p>
-                                <button onclick="Auth.reset()" style="color:red;">Factory Reset</button>
-                            </div>
-                        `, 400, 400);
-                        break;
-
-                    case 'terminal':
-                        WM.open('terminal', 'CMD', `
-                            <div style="background:black; color:#ccc; height:100%; padding:10px; font-family:monospace;" onclick="this.querySelector('input').focus()">
-                                <div>AtomOS Kernel v3.0 [Root Access]</div>
-                                <div id="term-out"></div>
-                                <div style="display:flex;">root@atom:~$ <input style="background:transparent; border:none; color:white; flex:1;" onkeydown="if(event.key=='Enter'){
-                                    const v = this.value;
-                                    document.getElementById('term-out').innerHTML += '<div>root@atom:~$ '+v+'</div>';
-                                    if(v=='ls') document.getElementById('term-out').innerHTML += '<div>doc.txt  system.sys</div>';
-                                    else if(v=='clear') document.getElementById('term-out').innerHTML = '';
-                                    else document.getElementById('term-out').innerHTML += '<div>Command not found</div>';
-                                    this.value='';
-                                }"></div>
-                            </div>
-                        `, 600, 350);
+                            <textarea style="width:100%; height:100%; border:none; padding:10px; font-family:monospace; resize:none;">Type here...</textarea>
+                        `);
                         break;
                 }
             }
         };
 
-        // --- UI UTILS ---
-        const UI = {
-            toggleStart: function() {
-                const menu = document.getElementById('start-menu');
-                menu.classList.toggle('show');
+        // --- BROWSER LOGIC (The "Fix") ---
+        const Browser = {
+            currentProxyIndex: 0,
+            
+            go: function() {
+                const val = document.getElementById('url-bar').value;
+                const frame = document.getElementById('browser-frame');
+                
+                // Check if user is trying a blocked site directly
+                if(val.includes('google.com') || val.includes('youtube.com')) {
+                    if(confirm("Direct access to Google/YouTube is blocked by headers. Use Proxy Mode?")) {
+                        this.loadViaProxy(val);
+                    } else {
+                        frame.src = val; // Will likely fail
+                    }
+                } else if (!val.startsWith('http')) {
+                    // Search
+                    frame.src = "https://www.bing.com/search?q=" + encodeURIComponent(val);
+                } else {
+                    frame.src = val;
+                }
             },
-            closeStart: function() {
-                document.getElementById('start-menu').classList.remove('show');
+            
+            loadViaProxy: function(url) {
+                const proxy = System.proxies[this.currentProxyIndex];
+                const frame = document.getElementById('browser-frame');
+                
+                // Simple logic: Load the proxy homepage so user can surf inside it
+                // Or try to append if the proxy supports standard UV formatting (complex to guess)
+                frame.src = proxy;
+                alert("Loading via Proxy Node " + (this.currentProxyIndex+1) + ".\nType your destination INSIDE the loaded website.");
             },
-            showContext: function(e) {
-                e.preventDefault();
-                const cm = document.getElementById('context-menu');
-                cm.style.display = 'flex';
-                cm.style.left = e.clientX + 'px';
-                cm.style.top = e.clientY + 'px';
-                document.addEventListener('click', () => cm.style.display='none', {once:true});
-            }
+            
+            tryNextProxy: function() {
+                this.currentProxyIndex = (this.currentProxyIndex + 1) % System.proxies.length;
+                this.loadViaProxy();
+            },
+
+            back: () => document.getElementById('browser-frame').contentWindow.history.back(),
+            reload: () => document.getElementById('browser-frame').contentWindow.location.reload()
         };
 
-        const Clock = {
-            start: function() {
-                setInterval(() => {
-                    const d = new Date();
-                    document.getElementById('clock').innerText = d.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
-                }, 1000);
+        // --- UI TOGGLES ---
+        function toggleStart() {
+            document.getElementById('start-screen').classList.toggle('active');
+        }
+        
+        // Charms Bar Trigger (Mouse Right Edge)
+        document.addEventListener('mousemove', (e) => {
+            const charms = document.getElementById('charms');
+            if(window.innerWidth - e.clientX < 20) {
+                charms.classList.add('show');
+            } else if (window.innerWidth - e.clientX > 120) {
+                charms.classList.remove('show');
             }
-        };
-
-        // Initialize System
-        window.onload = () => System.init();
+        });
 
     </script>
 </body>
