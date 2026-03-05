@@ -3,256 +3,200 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ATOM | stargazing ⚛️</title>
+    <title>ATOM | starlight ⚛️</title>
     
     <script src="/uv/uv.bundle.js"></script>
     <script src="/uv/uv.config.js"></script>
     <script>
         if ("serviceWorker" in navigator) {
             window.addEventListener("load", () => {
-                navigator.serviceWorker.register("/uv/sw.js", {
-                    scope: __uv$config.prefix,
-                });
+                navigator.serviceWorker.register("/uv/sw.js", { scope: __uv$config.prefix });
             });
         }
     </script>
 
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&family=Syncopate:wght@700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@700&family=Space+Grotesk:wght@300;700&display=swap" rel="stylesheet">
     
     <style>
         :root {
-            --primary: #7000ff;
-            --secondary: #00ffff;
-            --accent: #ff00ff;
-            --bg: #050208;
-            --glass: rgba(255, 255, 255, 0.05);
+            --glow: #7000ff;
+            --cyber: #00ffff;
+            --hot: #ff00ff;
+            --dark: #020205;
         }
 
-        * { box-sizing: border-box; }
-        body {
-            background: radial-gradient(circle at center, #1a0b2e 0%, var(--bg) 100%);
+        body, html {
+            margin: 0; padding: 0; height: 100%;
+            background: var(--dark);
             color: #fff;
-            font-family: 'Orbitron', sans-serif;
-            margin: 0;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
+            font-family: 'Space Grotesk', sans-serif;
             overflow: hidden;
         }
 
-        /* top nav / tabs */
+        /* animated starlight background */
+        .stars {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(ellipse at bottom, #1B2735 0%, #090A0F 100%);
+            z-index: -1;
+        }
+
         nav {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 15px 40px;
-            background: var(--glass);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(112, 0, 255, 0.3);
-            z-index: 100;
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 20px 50px;
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(15px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        .logo { font-family: 'Syncopate'; font-size: 1.5rem; color: var(--secondary); letter-spacing: 5px; }
+        .logo { font-family: 'Syncopate'; font-size: 1.8rem; background: linear-gradient(45deg, var(--cyber), var(--glow)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 
-        .nav-links { display: flex; gap: 30px; }
-        .nav-item {
-            text-transform: uppercase;
-            font-size: 0.8rem;
-            letter-spacing: 2px;
-            cursor: pointer;
-            transition: 0.3s;
-            color: #888;
-            font-weight: 900;
-        }
-        .nav-item:hover, .nav-item.active { color: var(--secondary); text-shadow: 0 0 10px var(--secondary); }
+        .tabs { display: flex; gap: 40px; }
+        .tab { cursor: pointer; text-transform: uppercase; font-weight: 700; letter-spacing: 2px; opacity: 0.6; transition: 0.3s; }
+        .tab:hover, .tab.active { opacity: 1; color: var(--cyber); text-shadow: 0 0 10px var(--cyber); }
 
-        /* content areas */
-        .page { display: none; flex-direction: column; align-items: center; height: 100%; padding: 40px; overflow-y: auto; }
-        .page.active { display: flex; }
+        .container { height: calc(100vh - 80px); display: flex; flex-direction: column; align-items: center; justify-content: center; transition: 0.5s; }
 
-        /* search bar */
-        .search-container {
-            width: 100%;
-            max-width: 700px;
-            display: flex;
-            background: var(--glass);
-            border-radius: 50px;
-            padding: 8px;
-            border: 1px solid var(--primary);
-            margin-bottom: 30px;
+        /* ultra-luxe search bar */
+        .search-box {
+            width: 80%; max-width: 800px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(112, 0, 255, 0.3);
+            border-radius: 20px;
+            display: flex; padding: 10px;
+            box-shadow: 0 0 50px rgba(112, 0, 255, 0.2);
         }
 
-        input {
-            flex: 1;
-            background: transparent;
-            border: none;
-            outline: none;
-            color: #fff;
-            padding: 10px 20px;
-            font-family: 'Orbitron';
+        input { flex: 1; background: transparent; border: none; outline: none; color: #fff; font-size: 1.2rem; padding: 15px; font-family: 'Space Grotesk'; }
+        
+        button#go {
+            background: linear-gradient(45deg, var(--glow), var(--hot));
+            border: none; color: white; padding: 0 40px; border-radius: 15px;
+            font-weight: 900; cursor: pointer; transition: 0.3s;
         }
 
-        button#launch {
-            background: var(--primary);
-            border: none;
-            color: white;
-            padding: 10px 30px;
-            border-radius: 50px;
-            cursor: pointer;
-            font-weight: 900;
-            transition: 0.3s;
+        button#go:hover { transform: scale(1.05); box-shadow: 0 0 20px var(--hot); }
+
+        /* game launcher grid */
+        .arcade-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px; width: 85%; max-width: 1200px; display: none;
         }
 
-        button#launch:hover { background: var(--accent); transform: scale(1.05); }
-
-        /* game grid */
-        .game-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 20px;
-            width: 100%;
-            max-width: 1000px;
+        .launcher-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 25px; border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 40px; text-align: center; transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer; position: relative; overflow: hidden;
         }
 
-        .game-card {
-            background: rgba(255,255,255,0.03);
-            border: 1px solid rgba(112, 0, 255, 0.2);
-            border-radius: 15px;
-            padding: 20px;
-            text-align: center;
-            transition: 0.3s;
-            cursor: pointer;
+        .launcher-card:hover {
+            background: rgba(112, 0, 255, 0.15);
+            border-color: var(--cyber);
+            transform: translateY(-10px) scale(1.02);
         }
 
-        .game-card:hover {
-            background: rgba(112, 0, 255, 0.1);
-            border-color: var(--secondary);
-            transform: translateY(-5px);
+        .launcher-card.roblox-special {
+            border: 2px solid var(--cyber);
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.2);
         }
 
-        .game-card img { width: 60px; margin-bottom: 10px; filter: drop-shadow(0 0 5px var(--secondary)); }
-        .game-card h3 { margin: 10px 0 5px; font-size: 1rem; color: var(--secondary); }
-        .game-card p { font-size: 0.7rem; color: #888; margin: 0; }
-
-        /* iframe viewport */
-        .viewport-container {
-            width: 100%;
-            height: 100%;
-            display: none; /* hidden until a site is loaded */
-            background: #000;
+        .badge {
+            position: absolute; top: 15px; right: 15px;
+            background: var(--cyber); color: #000;
+            padding: 5px 12px; border-radius: 10px; font-size: 0.6rem; font-weight: 900;
         }
 
+        /* viewport */
+        #viewport { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1000; display: none; background: #000; }
         iframe { width: 100%; height: 100%; border: none; }
-
-        .back-btn {
-            position: absolute;
-            bottom: 20px;
-            right: 20px;
-            background: var(--accent);
-            padding: 10px 20px;
-            border-radius: 10px;
-            cursor: pointer;
-            font-size: 0.7rem;
-            font-weight: 900;
-            z-index: 200;
-        }
+        .exit-ui { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); z-index: 1001; background: rgba(0,0,0,0.8); padding: 10px 30px; border-radius: 50px; border: 1px solid var(--hot); cursor: pointer; font-weight: 900; }
     </style>
 </head>
 <body>
 
+    <div class="stars"></div>
+
     <nav>
         <div class="logo">ATOM</div>
-        <div class="nav-links">
-            <div class="nav-item active" onclick="showPage('home')">Home</div>
-            <div class="nav-item" onclick="showPage('arcade')">Arcade</div>
-            <div class="nav-item" onclick="showPage('settings')">Settings</div>
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab('home')">Nexus</div>
+            <div class="tab" onclick="switchTab('arcade')">Arcade</div>
         </div>
     </nav>
 
-    <div id="home" class="page active">
-        <div class="search-container">
-            <input type="text" id="urlInput" placeholder="explore the multiverse...">
-            <button id="launch">GO</button>
+    <div id="home" class="container">
+        <h1 style="font-size: 3.5rem; margin-bottom: 10px; letter-spacing: -2px;">SPLIT THE <span style="color:var(--cyber)">ATOM</span>.</h1>
+        <p style="opacity: 0.5; margin-bottom: 40px;">unfiltered access to the stargazing coordinates.</p>
+        <div class="search-box">
+            <input type="text" id="urlInput" placeholder="search the galaxy or enter a destination...">
+            <button id="go">LAUNCH</button>
         </div>
-        <p style="color: #555; font-size: 0.8rem;">tip: enter a URL or just type something to search brave.</p>
     </div>
 
-    <div id="arcade" class="page">
-        <h1 style="font-family: 'Syncopate'; font-size: 1.2rem; margin-bottom: 30px;">THE NEBULA ARCADE</h1>
-        <div class="game-grid">
-            <div class="game-card" onclick="processUrl('https://www.roblox.com')">
-                <div style="font-size: 40px;">🟥</div>
-                <h3>ROBLOX</h3>
-                <p>now.gg / web version</p>
+    <div id="arcade" class="container" style="display:none;">
+        <div class="arcade-grid" id="grid">
+            <div class="launcher-card roblox-special" onclick="launchMobileRoblox()">
+                <div class="badge">MOBILE EMULATOR</div>
+                <div style="font-size: 50px;">🎮</div>
+                <h2 style="margin: 15px 0 5px;">ROBLOX</h2>
+                <p style="opacity: 0.6;">optimized cloud launcher (now.gg mirror)</p>
             </div>
-            <div class="game-card" onclick="processUrl('https://supermario-game.com/')">
-                <div style="font-size: 40px;">🍄</div>
-                <h3>MARIO</h3>
-                <p>super mario bros classic</p>
+
+            <div class="launcher-card" onclick="openUrl('https://supermario-game.com/')">
+                <div style="font-size: 50px;">🍄</div>
+                <h2>MARIO</h2>
+                <p style="opacity: 0.6;">classic 64-bit nostalgia</p>
             </div>
-            <div class="game-card" onclick="processUrl('https://www.google.com/logos/2010/pacman10-i.html')">
-                <div style="font-size: 40px;">🟡</div>
-                <h3>PAC-MAN</h3>
-                <p>classic arcade</p>
-            </div>
-            <div class="game-card" onclick="processUrl('https://sonic-js.com/')">
-                <div style="font-size: 40px;">🦔</div>
-                <h3>SONIC</h3>
-                <p>blue blur action</p>
-            </div>
-            <div class="game-card" onclick="processUrl('https://poki.com')">
-                <div style="font-size: 40px;">🎮</div>
-                <h3>POKI</h3>
-                <p>1000+ web games</p>
+
+            <div class="launcher-card" onclick="openUrl('https://sonic-js.com/')">
+                <div style="font-size: 50px;">🦔</div>
+                <h2>SONIC</h2>
+                <p style="opacity: 0.6;">unlocked speed engine</p>
             </div>
         </div>
     </div>
 
-    <div id="viewport" class="viewport-container">
-        <iframe id="uvFrame"></iframe>
-        <div class="back-btn" onclick="closeViewport()">EXIT VIEWPORT</div>
+    <div id="viewport">
+        <iframe id="mainFrame"></iframe>
+        <div class="exit-ui" onclick="exitVp()">CLOSE SESSION ⚡</div>
     </div>
 
     <script>
-        const input = document.getElementById('urlInput');
-        const btn = document.getElementById('launch');
-        const frame = document.getElementById('uvFrame');
-        const viewport = document.getElementById('viewport');
+        const frame = document.getElementById('mainFrame');
+        const vp = document.getElementById('viewport');
 
-        function showPage(id) {
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
+        function switchTab(id) {
+            document.querySelectorAll('.container').forEach(c => c.style.display = 'none');
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.getElementById(id).style.display = 'flex';
+            if(id === 'arcade') document.getElementById('grid').style.display = 'grid';
             event.currentTarget.classList.add('active');
-            viewport.style.display = 'none';
         }
 
-        function processUrl(val) {
+        function openUrl(val) {
             let url = val.trim();
             if (!url.includes('.')) {
                 url = 'https://search.brave.com/search?q=' + encodeURIComponent(url);
             } else if (!url.startsWith('http')) {
                 url = 'https://' + url;
             }
-            
-            // let's goooo
             frame.src = __uv$config.prefix + __uv$config.encodeUrl(url);
-            
-            // hide everything and show the frame
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            viewport.style.display = 'block';
+            vp.style.display = 'block';
         }
 
-        btn.onclick = () => processUrl(input.value);
-        
-        input.onkeydown = (e) => {
-            if (e.key === 'Enter') btn.click();
-        };
+        // the "better" roblox mobile-style launcher logic
+        function launchMobileRoblox() {
+            // we use a specific cloud-node link that triggers the web-mobile client
+            const mobileRoblox = "https://now.gg/apps/roblox-corporation/5349/roblox.html";
+            openUrl(mobileRoblox);
+        }
 
-        function closeViewport() {
-            frame.src = "about:blank";
-            viewport.style.display = 'none';
-            document.getElementById('home').classList.add('active');
+        document.getElementById('go').onclick = () => openUrl(document.getElementById('urlInput').value);
+        document.getElementById('urlInput').onkeydown = (e) => { if(e.key === 'Enter') document.getElementById('go').click(); };
+
+        function exitVp() {
+            vp.style.display = 'none';
+            frame.src = 'about:blank';
         }
     </script>
 </body>
