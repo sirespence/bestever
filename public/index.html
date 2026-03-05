@@ -352,3 +352,106 @@
             open: function(name) {
                 switch(name) {
                     case 'browser':
+                        const browserHtml = `
+                            <div style="display:flex; flex-direction:column; height:100%;">
+                                <div class="browser-nav">
+                                    <div class="nav-btn" onclick="this.closest('.win-body').querySelector('iframe').contentWindow.history.back()">←</div>
+                                    <div class="nav-btn" onclick="this.closest('.win-body').querySelector('iframe').contentWindow.location.reload()">↻</div>
+                                    <select id="proxy-sel" style="border:1px solid #7a8a99; border-radius:3px; font-size:11px;">
+                                        <option value="direct">Direct</option>
+                                        <option value="${CONFIG.proxies['Ultraviolet (Public)']}">Ultraviolet</option>
+                                        <option value="${CONFIG.proxies['Rammerhead']}">Rammerhead</option>
+                                    </select>
+                                    <input type="text" class="nav-input" value="https://search.brave.com" onkeydown="if(event.key=='Enter') App.navigate(this)">
+                                    <div class="nav-btn" onclick="App.navigate(this.previousElementSibling)">Go</div>
+                                </div>
+                                <iframe src="https://search.brave.com"></iframe>
+                            </div>
+                        `;
+                        WM.create('browser', 'Atom Net', browserHtml, 900, 600);
+                        break;
+
+                    case 'roblox':
+                        // Logic: Try cloud first.
+                        WM.create('roblox', 'Roblox Player', `
+                            <div style="display:flex; flex-direction:column; height:100%;">
+                                <div style="background:#ff3333; color:white; padding:5px; font-size:12px; text-align:center;">
+                                    Warning: Cloud Gaming has queues. If blocked, use Browser + Proxy.
+                                </div>
+                                <iframe src="${CONFIG.robloxCloud}"></iframe>
+                            </div>
+                        `, 1000, 650);
+                        break;
+                    
+                    case 'terminal':
+                        WM.create('terminal', 'Command Prompt', `
+                            <div style="background:black; color:#ccc; font-family:monospace; padding:10px; height:100%; overflow:auto;" onclick="this.querySelector('input').focus()">
+                                <div>Microsoft Windows [Version 6.1.7601]</div>
+                                <div>(c) 2009 Microsoft Corporation. All rights reserved.</div>
+                                <br>
+                                <div id="term-out"></div>
+                                <div style="display:flex;">
+                                    <span>C:\\Users\\Admin></span>
+                                    <input type="text" style="background:transparent; border:none; color:white; flex:1; outline:none; font-family:monospace;" 
+                                    onkeydown="if(event.key=='Enter'){ 
+                                        document.getElementById('term-out').innerHTML += '<div>C:\\Users\\Admin> '+this.value+'</div>';
+                                        if(this.value=='help') document.getElementById('term-out').innerHTML += '<div>COMMANDS: PING, ECHO, CLS, EXIT</div>';
+                                        else if(this.value=='cls') document.getElementById('term-out').innerHTML = '';
+                                        else if(this.value=='exit') WM.close('terminal');
+                                        else document.getElementById('term-out').innerHTML += '<div>\''+this.value+'\' is not recognized.</div>';
+                                        this.value='';
+                                        this.scrollIntoView();
+                                    }">
+                                </div>
+                            </div>
+                        `, 600, 400);
+                        break;
+
+                    case 'settings':
+                        WM.create('settings', 'Control Panel', `
+                            <div style="padding:20px; background:#f0f0f0; height:100%;">
+                                <h3>Personalization</h3>
+                                <p>Wallpaper URL:</p>
+                                <input type="text" style="width:100%; padding:5px;" onchange="document.body.style.backgroundImage = 'url('+this.value+')'">
+                            </div>
+                        `, 400, 300);
+                        break;
+                }
+            },
+
+            navigate: function(inputEl) {
+                const wrapper = inputEl.closest('.win-body');
+                const iframe = wrapper.querySelector('iframe');
+                const proxySel = wrapper.querySelector('#proxy-sel');
+                const mode = proxySel.value;
+                
+                let url = inputEl.value.trim();
+
+                // URL Formatting
+                if(!url.startsWith('http')) {
+                    if(url.includes('.')) url = 'https://' + url;
+                    else url = CONFIG.searchEngine + encodeURIComponent(url);
+                }
+
+                // Proxy Handling
+                if(mode !== 'direct') {
+                    // This is a naive implementation. Real UV requires XOR encoding.
+                    // For this simulation, we append the URL if the proxy supports simple query params,
+                    // otherwise we just load the proxy homepage so the user can type it there.
+                    iframe.src = mode; 
+                    alert("Proxy Mode: Loaded Proxy Homepage.\nPlease type '" + url + "' into the proxy's internal search bar.");
+                } else {
+                    iframe.src = url;
+                }
+            }
+        };
+
+        // Clock
+        setInterval(() => {
+            const d = new Date();
+            document.getElementById('clock').innerText = d.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+        }, 1000);
+
+    </script>
+</body>
+</html>
