@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>atom | 2006 🫧</title>
+    <title>ATOM</title>
     
-    <!-- Preserving your UV scripts -->
     <script src="/uv/uv.bundle.js"></script>
     <script src="/uv/uv.config.js"></script>
     <script>
@@ -17,250 +16,230 @@
     </script>
 
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap');
+
         :root {
-            --gloss: rgba(255, 255, 255, 0.65);
-            --gloss-border: rgba(255, 255, 255, 0.8);
-            --shadow: rgba(0, 0, 0, 0.15);
+            --accent: #00ffcc;
+            --secondary: #0088ff;
+            --glass: rgba(10, 10, 15, 0.6);
+            --border: rgba(255, 255, 255, 0.1);
         }
 
         body, html {
-            margin: 0; padding: 0; height: 100%;
-            /* Enhanced Frutiger Aero Aurora */
-            background: linear-gradient(180deg, #4facfe 0%, #00f2fe 30%, #ffffff 60%, #3aeb3a 100%);
-            background-size: 400% 400%;
-            font-family: 'Segoe UI', 'Verdana', sans-serif;
+            margin: 0; padding: 0; height: 100%; width: 100%;
+            background: #050505;
+            color: white;
+            font-family: 'Inter', sans-serif;
+            overflow: hidden;
             display: flex; align-items: center; justify-content: center;
-            overflow: hidden;
-            animation: auroraFlow 15s ease infinite;
         }
 
-        /* Moving background gradient animation */
-        @keyframes auroraFlow {
-            0% { background-position: 50% 0%; }
-            50% { background-position: 50% 100%; }
-            100% { background-position: 50% 0%; }
+        /* Animated Starfield */
+        .starfield {
+            position: fixed; inset: 0; z-index: -1;
+            background: radial-gradient(circle at center, #1a1a2e 0%, #000000 100%);
         }
-
-        /* Floating background bubbles */
-        .bubble-bg {
-            position: absolute;
-            width: 100%; height: 100%;
-            z-index: -1;
-            overflow: hidden;
-        }
-        .bubble {
-            position: absolute;
-            background: rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            bottom: -50px;
-            animation: floatUp 10s infinite linear;
-        }
-        @keyframes floatUp {
-            0% { transform: translateY(0) scale(1); opacity: 0; }
-            20% { opacity: 0.8; }
-            80% { opacity: 0.5; }
-            100% { transform: translateY(-120vh) scale(1.5); opacity: 0; }
-        }
-
-        /* Main Container with Pop-in animation */
-        .glass-orb {
-            background: var(--gloss);
-            backdrop-filter: blur(35px) saturate(140%);
-            -webkit-backdrop-filter: blur(35px) saturate(140%);
-            border: 2px solid var(--gloss-border);
-            border-radius: 45px;
-            padding: 50px;
-            width: 420px;
-            text-align: center;
-            box-shadow: 
-                0 30px 60px var(--shadow),
-                inset 0 10px 20px rgba(255,255,255,0.9),
-                inset 0 -10px 20px rgba(0,0,0,0.05);
-            position: relative;
-            transform: scale(0.8);
+        .star {
+            position: absolute; background: white; border-radius: 50%;
+            animation: twinkle var(--duration) ease-in-out infinite;
             opacity: 0;
-            animation: popIn 0.8s cubic-bezier(0.19, 1, 0.22, 1) forwards;
+        }
+        @keyframes twinkle {
+            0% { transform: scale(0); opacity: 0; }
+            50% { transform: scale(1); opacity: var(--opacity); }
+            100% { transform: scale(0); opacity: 0; }
         }
 
-        @keyframes popIn {
-            to { transform: scale(1); opacity: 1; }
+        /* Main Interface Card */
+        .card {
+            width: 500px;
+            padding: 50px;
+            background: var(--glass);
+            backdrop-filter: blur(50px);
+            -webkit-backdrop-filter: blur(50px);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            box-shadow: 0 0 80px rgba(0, 255, 204, 0.05), inset 0 0 0 1px rgba(255,255,255,0.05);
+            text-align: center;
+            opacity: 0;
+            transform: scale(0.95);
+            animation: cardEntrance 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards 0.2s;
         }
 
-        /* Glossy Highlight on top */
-        .glass-orb::before {
-            content: ''; position: absolute; top: 10px; left: 50%; transform: translateX(-50%);
-            width: 90%; height: 120px;
-            background: linear-gradient(180deg, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0) 100%);
-            border-radius: 40px 40px 60px 60px;
-            pointer-events: none;
+        @keyframes cardEntrance {
+            to { opacity: 1; transform: scale(1); }
         }
 
+        /* Typography */
         h1 {
-            font-size: 4rem; margin: 0;
-            font-weight: 800; letter-spacing: -2px;
-            background: linear-gradient(180deg, #37a126 0%, #0099ff 100%);
+            font-size: 5rem; margin: 0; line-height: 1;
+            font-weight: 800; letter-spacing: -4px;
+            background: linear-gradient(135deg, #fff 0%, #a5a5a5 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            filter: drop-shadow(0 2px 0 rgba(255,255,255,0.8));
-            position: relative; z-index: 2;
+            margin-bottom: 10px;
+        }
+        
+        .status {
+            font-size: 0.8rem; text-transform: uppercase; letter-spacing: 4px;
+            color: var(--accent); margin-bottom: 40px;
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+        }
+        .status::before {
+            content: ''; width: 8px; height: 8px; background: var(--accent);
+            border-radius: 50%; box-shadow: 0 0 10px var(--accent);
         }
 
-        .subtitle { 
-            font-size: 0.9rem; color: #444; margin-bottom: 35px; 
-            letter-spacing: 3px; text-transform: uppercase; font-weight: 700; 
-            text-shadow: 0 1px 1px rgba(255,255,255,0.8);
-        }
-
+        /* Input Field */
+        .input-group { position: relative; width: 100%; margin-bottom: 30px; }
+        
         input {
-            width: 100%;
-            background: rgba(255, 255, 255, 0.9);
-            border: 2px solid #fff;
-            padding: 16px 24px;
-            border-radius: 30px;
-            font-size: 1.1rem;
-            outline: none;
-            box-sizing: border-box;
-            margin-bottom: 25px;
-            box-shadow: inset 0 3px 8px rgba(0,0,0,0.05);
-            transition: all 0.3s ease;
-            color: #444;
+            width: 100%; padding: 20px 25px;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            color: #fff; font-size: 1.2rem;
+            outline: none; transition: 0.3s;
+            box-sizing: border-box; font-family: 'Inter', sans-serif;
         }
         input:focus {
-            box-shadow: inset 0 3px 8px rgba(0,0,0,0.1), 0 0 15px rgba(0, 210, 255, 0.5);
-            transform: scale(1.02);
+            background: rgba(255,255,255,0.07);
+            border-color: var(--accent);
+            box-shadow: 0 0 30px rgba(0, 255, 204, 0.1);
         }
 
-        .button-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        /* Buttons */
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
 
         button {
-            padding: 18px; border-radius: 25px; border: 1px solid rgba(255,255,255,0.5);
-            font-weight: 800; cursor: pointer; font-size: 1.1rem; 
-            color: white; text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+            padding: 20px; border: none; border-radius: 16px;
+            font-weight: 700; font-size: 1rem; cursor: pointer;
+            transition: 0.3s cubic-bezier(0.16, 1, 0.3, 1);
             position: relative; overflow: hidden;
-            transition: all 0.2s ease;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            text-transform: uppercase; letter-spacing: 1px;
         }
 
-        button::after {
-            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 50%;
-            background: linear-gradient(to bottom, rgba(255,255,255,0.6), transparent);
-            border-radius: 25px 25px 50% 50%;
+        .btn-launch {
+            background: #fff; color: #000;
         }
+        .btn-launch:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(255,255,255,0.2); }
 
-        .btn-roblox { 
-            background: linear-gradient(180deg, #81c784 0%, #2e7d32 100%);
-            box-shadow: 0 4px 0 #1b5e20, 0 10px 20px rgba(46, 125, 50, 0.3);
+        .btn-roblox {
+            background: linear-gradient(135deg, #00ffcc 0%, #0088ff 100%);
+            color: #000;
         }
-        .btn-roblox:hover { filter: brightness(1.1); transform: translateY(-2px); box-shadow: 0 6px 0 #1b5e20, 0 15px 30px rgba(46, 125, 50, 0.4); }
+        .btn-roblox:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(0, 200, 255, 0.3); }
 
-        .btn-launch { 
-            background: linear-gradient(180deg, #4fc3f7 0%, #0288d1 100%);
-            box-shadow: 0 4px 0 #01579b, 0 10px 20px rgba(2, 136, 209, 0.3);
-        }
-        .btn-launch:hover { filter: brightness(1.1); transform: translateY(-2px); box-shadow: 0 6px 0 #01579b, 0 15px 30px rgba(2, 136, 209, 0.4); }
-
-        button:active { transform: translateY(4px) !important; box-shadow: 0 0 0 transparent !important; }
-
-        /* Portal (Iframe Container) */
+        /* Portal / Iframe */
         #portal {
-            position: fixed; inset: 0; 
-            background: #fff; z-index: 1000;
+            position: fixed; inset: 0; z-index: 100;
+            background: #000;
             opacity: 0; pointer-events: none;
-            transition: opacity 0.5s ease-in-out;
+            transition: opacity 0.5s ease;
             display: flex; flex-direction: column;
         }
         #portal.active { opacity: 1; pointer-events: auto; }
 
-        iframe { width: 100%; height: 100%; border: none; flex-grow: 1; }
-        
-        .controls {
-            height: 60px; background: #f0f0f0; border-top: 1px solid #ccc;
-            display: flex; align-items: center; justify-content: center;
+        iframe {
+            flex: 1; width: 100%; height: 100%; border: none;
+            background: #111;
         }
 
-        .back-pill {
-            background: linear-gradient(180deg, #fff 0%, #e0e0e0 100%);
-            border: 1px solid #ccc; padding: 10px 40px; border-radius: 50px;
-            font-weight: 700; cursor: pointer; color: #333;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            transition: 0.2s;
+        .bar {
+            height: 50px; background: #0a0a0f; border-bottom: 1px solid #333;
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 20px;
         }
-        .back-pill:hover { transform: scale(1.05); box-shadow: 0 5px 10px rgba(0,0,0,0.15); }
-        .back-pill:active { transform: scale(0.95); }
+        .bar-title { font-size: 0.9rem; color: #666; font-weight: 600; }
+        .close {
+            color: #fff; background: rgba(255,255,255,0.1);
+            padding: 8px 16px; border-radius: 8px; font-size: 0.8rem;
+            cursor: pointer; transition: 0.2s;
+        }
+        .close:hover { background: #ff3333; }
 
     </style>
 </head>
 <body>
 
-    <!-- Background Bubbles -->
-    <div class="bubble-bg" id="bubbles"></div>
+    <div class="starfield" id="stars"></div>
 
-    <div class="glass-orb">
+    <div class="card">
         <h1>atom</h1>
-        <div class="subtitle">system software v2.1</div>
-        
-        <input type="text" id="userInput" placeholder="Search web or enter URL...">
+        <div class="status">System Online /// Ready</div>
 
-        <div class="button-row">
-            <!-- Updated logic: uses generic robust search or official site via proxy -->
-            <button class="btn-roblox" onclick="blastOff('https://now.gg/play/roblox-corporation/5349/roblox')">Roblox</button>
-            <button class="btn-launch" onclick="blastOff(document.getElementById('userInput').value)">Launch</button>
+        <div class="input-group">
+            <input type="text" id="input" placeholder="Search Brave or type a URL..." autocomplete="off">
+        </div>
+
+        <div class="grid">
+            <!-- GeForce Now is the only reliable non-now.gg way to play browser Roblox -->
+            <button class="btn-roblox" onclick="load('https://play.geforcenow.com/mall/')">Roblox (GFN)</button>
+            <button class="btn-launch" onclick="load(document.getElementById('input').value)">Launch</button>
         </div>
     </div>
 
     <div id="portal">
-        <iframe id="uvFrame"></iframe>
-        <div class="controls">
-            <div class="back-pill" onclick="closePortal()">Exit Portal</div>
+        <div class="bar">
+            <span class="bar-title">ATOM BROWSER // ENCRYPTED</span>
+            <div class="close" onclick="shut()">CLOSE SESSION</div>
         </div>
+        <iframe id="frame"></iframe>
     </div>
 
     <script>
-        // Generate bubbles dynamically
-        const bubbleContainer = document.getElementById('bubbles');
-        for(let i=0; i<15; i++){
-            let b = document.createElement('div');
-            b.className = 'bubble';
-            b.style.left = Math.random() * 100 + '%';
-            b.style.width = b.style.height = (Math.random() * 50 + 20) + 'px';
-            b.style.animationDuration = (Math.random() * 10 + 5) + 's';
-            b.style.animationDelay = (Math.random() * 5) + 's';
-            bubbleContainer.appendChild(b);
+        // Star Generation
+        const stars = document.getElementById('stars');
+        for(let i=0; i<100; i++) {
+            let s = document.createElement('div');
+            s.className = 'star';
+            s.style.left = Math.random() * 100 + '%';
+            s.style.top = Math.random() * 100 + '%';
+            let size = Math.random() * 3;
+            s.style.width = size + 'px';
+            s.style.height = size + 'px';
+            s.style.setProperty('--duration', (Math.random() * 3 + 2) + 's');
+            s.style.setProperty('--opacity', Math.random());
+            s.style.animationDelay = Math.random() * 5 + 's';
+            stars.appendChild(s);
         }
 
-        const frame = document.getElementById('uvFrame');
-        const view = document.getElementById('portal');
-        const input = document.getElementById('userInput');
+        const portal = document.getElementById('portal');
+        const frame = document.getElementById('frame');
+        const input = document.getElementById('input');
 
-        function blastOff(val) {
+        function load(val) {
             let url = val.trim();
-            if (!url) return;
+            if(!url) return;
 
-            // Basic URL handling logic
-            if (!url.includes('.') && !url.startsWith('http')) {
-                url = 'https://www.google.com/search?q=' + encodeURIComponent(url);
+            // Brave Search Logic
+            if (!url.includes('.') && !url.includes('://')) {
+                url = 'https://search.brave.com/search?q=' + encodeURIComponent(url);
             } else if (!url.startsWith('http')) {
                 url = 'https://' + url;
             }
 
-            // Transition logic
-            view.classList.add('active');
+            portal.classList.add('active');
             
-            // Wait for service worker if needed, though usually handled by uv.config
-            // Setting src with slight delay to allow UI to fade in smoothly
-            setTimeout(() => {
+            // Register service worker if missing, then load
+            if(!navigator.serviceWorker.controller) {
+                navigator.serviceWorker.register("/uv/sw.js", { scope: __uv$config.prefix })
+                .then(() => {
+                    frame.src = __uv$config.prefix + __uv$config.encodeUrl(url);
+                });
+            } else {
                 frame.src = __uv$config.prefix + __uv$config.encodeUrl(url);
-            }, 100);
+            }
         }
 
-        function closePortal() {
-            view.classList.remove('active');
-            setTimeout(() => {
-                frame.src = 'about:blank';
-            }, 500); // Wait for fade out
+        function shut() {
+            portal.classList.remove('active');
+            setTimeout(() => frame.src = 'about:blank', 500);
         }
 
-        input.onkeydown = (e) => { if (e.key === 'Enter') blastOff(input.value); };
+        input.addEventListener('keydown', e => {
+            if(e.key === 'Enter') load(input.value);
+        });
     </script>
 </body>
 </html>
