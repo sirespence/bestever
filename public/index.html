@@ -3,324 +3,422 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AtomOS | Metro</title>
+    <title>AtomOS | Ultimate</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* --- METRO / FRUTIGER METRO VARIABLES --- */
+        /* --- CORE VARIABLES --- */
         :root {
-            --metro-blue: #2d89ef;
-            --metro-dark: #1d1d1d;
-            --metro-purple: #603cba;
-            --metro-green: #00a300;
-            --metro-orange: #e3a21a;
-            --metro-red: #ee1111;
-            --glass-taskbar: rgba(0, 0, 0, 0.75);
-            --font-light: 'Segoe UI Light', 'Segoe UI', sans-serif;
-            --font-norm: 'Segoe UI', sans-serif;
+            --primary: #0078d7;
+            --glass: rgba(10, 20, 30, 0.85);
+            --glass-border: rgba(255, 255, 255, 0.15);
+            --taskbar-height: 48px;
+            --bg-image: url('https://images.unsplash.com/photo-1579546929518-9e396f3cc809?q=80&w=2070');
         }
 
-        * { box-sizing: border-box; user-select: none; outline: none; }
-        body {
-            margin: 0; padding: 0; height: 100vh; overflow: hidden;
-            font-family: var(--font-norm);
-            background: #0f0f0f url('https://images.unsplash.com/photo-1542831371-29b0f74f9713?q=80&w=2070&auto=format&fit=crop') center/cover no-repeat;
-        }
+        /* --- RESET & BASIC SETUP --- */
+        * { box-sizing: border-box; user-select: none; outline: none; font-family: 'Segoe UI', sans-serif; }
+        body { margin: 0; overflow: hidden; height: 100vh; background: #000; color: white; }
 
-        /* --- LOCK SCREEN --- */
-        #lock-screen {
-            position: fixed; inset: 0; z-index: 10000;
-            background: url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=2070') center/cover;
-            display: flex; flex-direction: column; justify-content: flex-end; padding: 50px;
-            color: white; transition: transform 0.5s ease-in-out;
+        /* --- BOOT & LOGIN --- */
+        #boot-layer {
+            position: fixed; inset: 0; background: #000; z-index: 10000;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
         }
-        #lock-screen.slide-up { transform: translateY(-100%); }
+        .boot-logo { font-size: 80px; font-weight: 100; letter-spacing: -4px; background: linear-gradient(45deg, #00f2fe, #4facfe); -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: fadeUp 1s ease-out; }
+        .spinner { width: 50px; height: 50px; border: 3px solid rgba(255,255,255,0.1); border-top: 3px solid #0078d7; border-radius: 50%; animation: spin 0.8s linear infinite; margin-top: 30px; }
         
-        .lock-time { font-size: 90px; font-weight: 300; font-family: var(--font-light); line-height: 1; }
-        .lock-date { font-size: 30px; font-weight: 300; margin-top: 10px; opacity: 0.9; }
-
-        /* --- START SCREEN (TILES) --- */
-        #start-screen {
-            position: fixed; inset: 0; z-index: 9000;
-            background: rgba(16, 16, 30, 0.95);
-            backdrop-filter: blur(10px);
-            display: flex; flex-direction: column; padding: 60px 80px;
-            transform: scale(1.1) opacity(0); transition: 0.3s cubic-bezier(0.1, 0.9, 0.2, 1);
-            pointer-events: none; opacity: 0;
-            overflow-x: auto;
+        #login-layer {
+            position: fixed; inset: 0; background: var(--bg-image) center/cover;
+            z-index: 9999; display: none; align-items: center; justify-content: center;
+            backdrop-filter: blur(15px);
         }
-        #start-screen.active { transform: scale(1); opacity: 1; pointer-events: auto; }
-
-        .start-header { color: white; font-size: 40px; font-family: var(--font-light); margin-bottom: 30px; }
-        .user-block { position: absolute; top: 40px; right: 80px; display: flex; align-items: center; gap: 15px; color: white; cursor: pointer; }
-        .user-img { width: 45px; height: 45px; background: #ddd; border-radius: 50%; }
-
-        .tile-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; width: 100%; }
-        
-        .tile {
-            height: 140px; position: relative; cursor: pointer;
-            background: var(--metro-blue); color: white;
-            display: flex; flex-direction: column; justify-content: flex-end; padding: 10px;
-            transition: transform 0.1s; border: 2px solid transparent;
+        .login-card {
+            background: rgba(0,0,0,0.6); padding: 40px; border-radius: 10px;
+            text-align: center; border: 1px solid rgba(255,255,255,0.2);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5); width: 350px;
         }
-        .tile:hover { border-color: rgba(255,255,255,0.4); z-index: 2; transform: scale(1.02); }
-        .tile:active { transform: scale(0.98); }
-        .tile i { font-size: 40px; margin: auto; }
-        .tile span { font-size: 14px; font-weight: 500; }
-        
-        /* Tile Colors */
-        .tile.wide { grid-column: span 2; background: var(--metro-purple); }
-        .tile.orange { background: var(--metro-orange); }
-        .tile.green { background: var(--metro-green); }
-        .tile.red { background: var(--metro-red); }
+        .avatar { width: 100px; height: 100px; border-radius: 50%; background: #ccc; margin: 0 auto 20px; border: 3px solid white; background-size: cover; }
+        .login-input { background: rgba(255,255,255,0.1); border: 1px solid #555; padding: 10px; color: white; width: 100%; margin-bottom: 10px; border-radius: 4px; }
+        .btn-primary { background: var(--primary); color: white; border: none; padding: 10px 20px; cursor: pointer; border-radius: 4px; width: 100%; font-weight: 600; }
+        .btn-primary:hover { filter: brightness(1.1); }
 
-        /* --- DESKTOP --- */
-        #desktop { position: absolute; inset: 0; z-index: 10; }
+        /* --- DESKTOP ENVIRONMENT --- */
+        #desktop {
+            position: absolute; inset: 0; background: var(--bg-image) center/cover;
+            transition: transform 0.3s;
+        }
         
-        /* --- WINDOWS (METRO AERO) --- */
+        /* Grid */
+        #icon-grid {
+            padding: 20px; display: grid; grid-template-columns: repeat(auto-fill, 90px);
+            grid-auto-rows: 100px; gap: 10px; height: calc(100% - var(--taskbar-height));
+        }
+
+        .d-icon {
+            display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
+            cursor: pointer; text-align: center; color: white; text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+            transition: 0.1s; padding: 5px; border-radius: 5px;
+        }
+        .d-icon:hover { background: rgba(255,255,255,0.15); box-shadow: inset 0 0 0 1px rgba(255,255,255,0.2); }
+        .d-icon i, .d-icon img { font-size: 36px; margin-bottom: 5px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5)); width: 48px; height: 48px; object-fit: contain; }
+        .d-icon span { font-size: 12px; line-height: 1.2; word-wrap: break-word; }
+
+        /* --- WINDOW MANAGER --- */
         .window {
-            position: absolute; background: white;
-            box-shadow: 0 0 15px rgba(0,0,0,0.4);
-            display: flex; flex-direction: column;
-            border: 1px solid #2d89ef;
-            opacity: 0; transform: scale(0.95); transition: 0.2s; visibility: hidden;
-            min-width: 300px; min-height: 200px; resize: both; overflow: hidden;
+            position: absolute; background: var(--glass);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border); border-radius: 8px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.6);
+            display: flex; flex-direction: column; overflow: hidden;
+            min-width: 300px; min-height: 200px;
+            opacity: 0; transform: scale(0.95); transition: opacity 0.2s, transform 0.2s, width 0.2s, height 0.2s, top 0.2s, left 0.2s;
+            visibility: hidden; resize: both;
         }
-        .window.open { opacity: 1; transform: scale(1); visibility: visible; }
-        .window.maximized { top:0!important; left:0!important; width:100%!important; height:calc(100% - 40px)!important; }
+        .window.active { opacity: 1; transform: scale(1); visibility: visible; }
+        .window.maximized { top:0!important; left:0!important; width:100%!important; height:calc(100% - var(--taskbar-height))!important; border-radius: 0; }
 
-        .win-header {
-            height: 32px; background: white; display: flex; align-items: center; justify-content: space-between;
-            padding: 0 10px; cursor: default;
+        .title-bar {
+            height: 36px; background: rgba(255,255,255,0.05);
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 10px; cursor: default; border-bottom: 1px solid var(--glass-border);
         }
-        .win-title { font-size: 13px; font-weight: 600; text-transform: uppercase; color: #555; }
-        .win-controls { display: flex; gap: 2px; height: 100%; }
-        .win-btn { width: 34px; height: 100%; border: none; background: transparent; font-family: "Segoe UI Symbol"; cursor: pointer; font-size: 12px; transition: 0.2s; }
-        .win-btn:hover { background: #eee; }
-        .btn-close:hover { background: #e81123; color: white; }
-
-        .win-content { flex: 1; position: relative; background: #f0f0f0; border-top: 1px solid #ccc; }
+        .win-title { font-size: 13px; font-weight: 600; opacity: 0.9; display: flex; align-items: center; gap: 8px; }
         
-        /* --- BROWSER SPECIFIC --- */
-        .browser-bar { padding: 8px; background: #f2f2f2; display: flex; gap: 10px; border-bottom: 1px solid #ddd; }
-        .url-input { flex: 1; padding: 5px 10px; border: 1px solid #a0a0a0; font-family: var(--font-norm); }
-        .proxy-status { font-size: 11px; color: green; display: flex; align-items: center; gap: 5px; }
+        .win-controls { display: flex; gap: 8px; }
+        .win-btn { width: 12px; height: 12px; border-radius: 50%; cursor: pointer; position: relative; }
+        .btn-close { background: #ff5f56; }
+        .btn-min { background: #ffbd2e; }
+        .btn-max { background: #27c93f; }
+        .win-btn:hover { filter: brightness(0.8); }
+
+        .win-body { flex: 1; position: relative; background: #1a1a1a; overflow: hidden; }
+        iframe { width: 100%; height: 100%; border: none; background: white; }
 
         /* --- TASKBAR --- */
         #taskbar {
-            position: absolute; bottom: 0; width: 100%; height: 40px;
-            background: var(--glass-taskbar); backdrop-filter: blur(10px);
-            display: flex; align-items: center; z-index: 9999;
+            position: absolute; bottom: 0; width: 100%; height: var(--taskbar-height);
+            background: rgba(10, 10, 15, 0.85); backdrop-filter: blur(15px);
+            border-top: 1px solid var(--glass-border);
+            display: flex; align-items: center; padding: 0 10px; z-index: 9000;
         }
+
         .start-btn {
-            width: 48px; height: 100%; display: flex; align-items: center; justify-content: center;
-            cursor: pointer; transition: 0.2s;
+            width: 36px; height: 36px; background: linear-gradient(135deg, #00d2ff, #3a7bd5);
+            border-radius: 4px; display: flex; align-items: center; justify-content: center;
+            font-size: 20px; cursor: pointer; box-shadow: 0 0 10px rgba(0,210,255,0.5);
+            transition: 0.2s; margin-right: 10px;
         }
-        .start-btn:hover { background: rgba(255,255,255,0.1); }
-        .start-btn i { color: white; font-size: 20px; }
+        .start-btn:hover { filter: brightness(1.2); }
 
-        .task-list { display: flex; height: 100%; }
-        .task-app {
-            width: 48px; height: 100%; display: flex; align-items: center; justify-content: center;
-            cursor: pointer; position: relative; transition: 0.2s;
+        .task-container { display: flex; gap: 5px; flex: 1; margin-left: 10px; }
+        .task-item {
+            width: 40px; height: 40px; border-radius: 4px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 20px; color: #aaa; cursor: pointer; position: relative;
+            transition: 0.2s;
         }
-        .task-app:hover { background: rgba(255,255,255,0.1); }
-        .task-app.active { background: rgba(255,255,255,0.2); border-bottom: 3px solid var(--metro-blue); }
-        .task-app img { width: 24px; height: 24px; }
-        .task-app i { color: #fff; font-size: 20px; }
+        .task-item:hover { background: rgba(255,255,255,0.1); color: white; }
+        .task-item.active { background: rgba(255,255,255,0.15); box-shadow: inset 0 -3px 0 var(--primary); color: white; }
 
-        #charms {
-            position: fixed; top: 0; right: 0; bottom: 0; width: 100px;
-            display: flex; flex-direction: column; justify-content: center; gap: 30px;
-            background: rgba(0,0,0,0.9); z-index: 10001;
-            transform: translateX(100%); transition: 0.2s; padding-left: 20px;
+        .tray { display: flex; gap: 10px; font-size: 12px; align-items: center; padding-right: 10px; }
+
+        /* --- START MENU (METRO STYLE) --- */
+        #start-menu {
+            position: fixed; bottom: 50px; left: 10px; width: 600px; height: 400px;
+            background: rgba(20, 25, 30, 0.95); backdrop-filter: blur(25px);
+            border: 1px solid var(--glass-border); border-radius: 8px;
+            z-index: 9001; display: none; padding: 20px;
+            animation: slideUp 0.2s cubic-bezier(0.1, 0.9, 0.2, 1);
+            grid-template-columns: 150px 1fr; gap: 20px;
         }
-        #charms.show { transform: translateX(0); }
-        .charm-icon { color: white; font-size: 24px; cursor: pointer; opacity: 0.7; transition: 0.2s; }
-        .charm-icon:hover { opacity: 1; transform: scale(1.1); }
+        #start-menu.open { display: grid; }
+        
+        .start-sidebar { border-right: 1px solid rgba(255,255,255,0.1); display: flex; flex-direction: column; gap: 10px; }
+        .start-btn-link { padding: 10px; cursor: pointer; border-radius: 4px; display: flex; align-items: center; gap: 10px; font-size: 13px; }
+        .start-btn-link:hover { background: rgba(255,255,255,0.1); }
+        
+        .start-grid { display: grid; grid-template-columns: repeat(3, 1fr); grid-auto-rows: 100px; gap: 10px; overflow-y: auto; }
+        .tile {
+            background: var(--primary); color: white; padding: 10px; border-radius: 4px;
+            display: flex; flex-direction: column; justify-content: flex-end; cursor: pointer;
+            transition: transform 0.1s; position: relative; overflow: hidden;
+        }
+        .tile:hover { transform: scale(1.03); z-index: 2; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
+        .tile i { font-size: 30px; margin-bottom: auto; margin-top: 10px; margin-left: 5px; }
+        .tile span { font-size: 13px; font-weight: 600; }
+        
+        /* Tile Colors */
+        .tile.wide { grid-column: span 2; background: #603cba; }
+        .tile.green { background: #00a300; }
+        .tile.red { background: #ee1111; }
+        .tile.orange { background: #e3a21a; }
+
+        /* --- APP SPECIFIC UI --- */
+        .browser-toolbar { display: flex; padding: 8px; background: #222; gap: 10px; align-items: center; }
+        .browser-input { flex: 1; background: #333; border: 1px solid #444; color: white; padding: 5px 10px; border-radius: 4px; }
+        
+        .file-explorer { color: white; padding: 10px; height: 100%; }
+        .file-list { display: grid; grid-template-columns: repeat(auto-fill, 80px); gap: 10px; margin-top: 10px; }
+        .file-item { text-align: center; cursor: pointer; font-size: 12px; padding: 5px; }
+        .file-item:hover { background: rgba(255,255,255,0.1); border-radius: 4px; }
+        
+        /* Context Menu */
+        #context-menu {
+            position: fixed; background: #2b2b2b; border: 1px solid #444;
+            width: 180px; z-index: 9999; display: none; flex-direction: column;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5); padding: 5px 0;
+        }
+        .ctx-item { padding: 8px 15px; font-size: 13px; cursor: pointer; color: white; display: flex; justify-content: space-between; }
+        .ctx-item:hover { background: var(--primary); }
+
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(50px); } to { opacity: 1; transform: translateY(0); } }
 
     </style>
 </head>
-<body onclick="checkActivity()">
+<body>
 
-    <!-- LOCK SCREEN -->
-    <div id="lock-screen" onclick="unlock()">
-        <div class="lock-time" id="lock-clock">12:00</div>
-        <div class="lock-date" id="lock-date">Thursday, March 5</div>
-        <div style="font-size:14px; margin-top:20px;">Click or Swipe Up to Unlock</div>
+    <!-- BOOT SCREEN -->
+    <div id="boot-layer">
+        <div class="boot-logo">Atom<b style="font-weight:600">OS</b></div>
+        <div class="spinner"></div>
+        <div style="margin-top:20px; color:#666;">Ultimate Edition</div>
     </div>
 
-    <!-- START SCREEN -->
-    <div id="start-screen">
-        <div class="user-block" onclick="Apps.open('settings')">
-            <span id="username-display">User</span>
-            <div class="user-img"></div>
-        </div>
-        <div class="start-header">Start</div>
-        <div class="tile-grid">
-            <div class="tile wide" onclick="Apps.open('browser')">
-                <i class="fa-brands fa-edge"></i>
-                <span>Edge Browser</span>
+    <!-- LOGIN SCREEN -->
+    <div id="login-layer">
+        <div class="login-card">
+            <div class="avatar" id="login-avatar" style="background-image: var(--bg-image);"></div>
+            <h2 id="login-msg">Welcome Back</h2>
+            <div id="auth-forms">
+                <input type="text" id="username-in" class="login-input" placeholder="Enter Username">
+                <button class="btn-primary" onclick="OS.login()">Log In</button>
             </div>
-            <div class="tile green" onclick="Apps.open('roblox')">
-                <i class="fa-solid fa-gamepad"></i>
-                <span>Roblox Cloud</span>
-            </div>
-            <div class="tile orange" onclick="Apps.open('explorer')">
-                <i class="fa-solid fa-folder"></i>
-                <span>File Explorer</span>
-            </div>
-            <div class="tile red" onclick="Apps.open('settings')">
-                <i class="fa-solid fa-gear"></i>
-                <span>PC Settings</span>
-            </div>
-            <div class="tile" onclick="Apps.open('notepad')">
-                <i class="fa-solid fa-pen"></i>
-                <span>Notepad</span>
-            </div>
-            <div class="tile" onclick="lock()">
-                <i class="fa-solid fa-lock"></i>
-                <span>Lock</span>
-            </div>
+            <div style="margin-top:15px; font-size:12px; color:#aaa; cursor:pointer;" onclick="OS.reset()">Reset System</div>
         </div>
     </div>
 
     <!-- DESKTOP -->
-    <div id="desktop"></div>
+    <div id="desktop" oncontextmenu="OS.showContext(event)">
+        <div id="icon-grid">
+            <!-- Icons injected by JS -->
+        </div>
+    </div>
 
     <!-- TASKBAR -->
     <div id="taskbar">
-        <div class="start-btn" onclick="toggleStart()">
-            <i class="fa-brands fa-windows"></i>
+        <div class="start-btn" onclick="OS.toggleStart()"><i class="fa-brands fa-windows"></i></div>
+        <div class="task-container" id="task-list"></div>
+        <div class="tray">
+            <i class="fa-solid fa-wifi"></i>
+            <span id="clock">12:00 PM</span>
         </div>
-        <div class="task-list" id="task-list"></div>
-        <div style="margin-left: auto; color: white; padding-right: 15px; font-size: 13px;" id="task-clock">12:00 PM</div>
     </div>
 
-    <!-- CHARMS BAR -->
-    <div id="charms">
-        <i class="fa-solid fa-magnifying-glass charm-icon"></i>
-        <i class="fa-brands fa-windows charm-icon" onclick="toggleStart()"></i>
-        <i class="fa-solid fa-gear charm-icon" onclick="Apps.open('settings')"></i>
+    <!-- START MENU -->
+    <div id="start-menu">
+        <div class="start-sidebar">
+            <div class="start-btn-link" onclick="Apps.open('settings')"><i class="fa-solid fa-gear"></i> Settings</div>
+            <div class="start-btn-link" onclick="Apps.open('explorer')"><i class="fa-solid fa-folder"></i> Documents</div>
+            <div class="start-btn-link" onclick="Apps.open('camera')"><i class="fa-solid fa-camera"></i> Camera</div>
+            <div class="start-btn-link" onclick="location.reload()" style="margin-top:auto;"><i class="fa-solid fa-power-off"></i> Shut Down</div>
+        </div>
+        <div class="start-grid">
+            <div class="tile wide" onclick="Apps.open('browser')">
+                <i class="fa-brands fa-edge"></i>
+                <span>Atom Net</span>
+            </div>
+            <div class="tile green" onclick="Apps.open('arcade')">
+                <i class="fa-solid fa-gamepad"></i>
+                <span>Truffle Arcade</span>
+            </div>
+            <div class="tile orange" onclick="Apps.open('paint')">
+                <i class="fa-solid fa-palette"></i>
+                <span>Paint</span>
+            </div>
+            <div class="tile red" onclick="Apps.open('media')">
+                <i class="fa-solid fa-music"></i>
+                <span>Media</span>
+            </div>
+            <div class="tile" onclick="Apps.open('vscode')">
+                <i class="fa-solid fa-code"></i>
+                <span>Code</span>
+            </div>
+            <div class="tile" onclick="Apps.open('terminal')">
+                <i class="fa-solid fa-terminal"></i>
+                <span>Terminal</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- CONTEXT MENU -->
+    <div id="context-menu">
+        <div class="ctx-item" onclick="Apps.open('notepad')">New Text Document</div>
+        <div class="ctx-item" onclick="Apps.open('settings')">Personalize</div>
+        <div class="ctx-item" onclick="location.reload()">Refresh</div>
     </div>
 
     <script>
-        // --- SYSTEM CONFIG ---
-        const System = {
+        // --- CORE OPERATING SYSTEM ---
+        const OS = {
+            user: { name: 'Admin', theme: 'dark', files: {} },
             proxies: [
-                "https://tomp.app/", // Common public proxy
-                "https://cdn.incognito.wiki/",
-                "https://ludicrous.icu/",
-                "https://search.brave.com/search?q=" // Fallback
+                'https://tomp.app/', 
+                'https://cdn.incognito.wiki/', 
+                'https://ludicrous.icu/',
+                'https://mathsspot.com/',
+                'https://search.brave.com/search?q=' // Fallback
             ],
-            data: {
-                username: "Administrator",
-                files: { 'welcome.txt': 'Welcome to AtomOS Metro Edition.' }
+            
+            init: function() {
+                // Boot Sequence
+                setTimeout(() => {
+                    document.getElementById('boot-layer').style.display = 'none';
+                    // Load Data
+                    const saved = localStorage.getItem('atom_os_truffle');
+                    if(saved) this.user = JSON.parse(saved);
+                    
+                    document.getElementById('login-layer').style.display = 'flex';
+                    if(this.user.name) document.getElementById('username-in').value = this.user.name;
+                    
+                    this.renderDesktop();
+                    this.startClock();
+                }, 2000);
+            },
+
+            login: function() {
+                const name = document.getElementById('username-in').value || 'User';
+                this.user.name = name;
+                this.save();
+                document.getElementById('login-layer').style.display = 'none';
+                Apps.playStartupSound();
+            },
+
+            save: function() {
+                localStorage.setItem('atom_os_truffle', JSON.stringify(this.user));
+            },
+
+            reset: function() {
+                localStorage.removeItem('atom_os_truffle');
+                location.reload();
+            },
+
+            renderDesktop: function() {
+                const grid = document.getElementById('icon-grid');
+                grid.innerHTML = '';
+                const apps = [
+                    { id: 'browser', name: 'Browser', icon: 'fa-globe', color: '#00d2ff' },
+                    { id: 'arcade', name: 'Arcade', icon: 'fa-gamepad', color: '#00ff00' },
+                    { id: 'explorer', name: 'Files', icon: 'fa-folder', color: '#e3a21a' },
+                    { id: 'notepad', name: 'Notes', icon: 'fa-note-sticky', color: '#fff' },
+                    { id: 'settings', name: 'Settings', icon: 'fa-gear', color: '#aaa' }
+                ];
+
+                apps.forEach(app => {
+                    const el = document.createElement('div');
+                    el.className = 'd-icon';
+                    el.onclick = () => Apps.open(app.id);
+                    el.innerHTML = `<i class="fa-solid ${app.icon}" style="color:${app.color}"></i><span>${app.name}</span>`;
+                    grid.appendChild(el);
+                });
+            },
+
+            startClock: function() {
+                setInterval(() => {
+                    document.getElementById('clock').innerText = new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+                }, 1000);
+            },
+
+            toggleStart: () => document.getElementById('start-menu').classList.toggle('open'),
+            
+            showContext: function(e) {
+                e.preventDefault();
+                const ctx = document.getElementById('context-menu');
+                ctx.style.display = 'flex';
+                ctx.style.left = e.clientX + 'px';
+                ctx.style.top = e.clientY + 'px';
+                document.addEventListener('click', () => ctx.style.display = 'none', {once:true});
             }
         };
-
-        // --- CLOCK & LOCK ---
-        function updateTime() {
-            const now = new Date();
-            const time = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            const date = now.toLocaleDateString([], { weekday: 'long', month: 'long', day: 'numeric' });
-            document.getElementById('lock-clock').innerText = time.replace(/\s[AP]M/, '');
-            document.getElementById('lock-date').innerText = date;
-            document.getElementById('task-clock').innerText = time;
-        }
-        setInterval(updateTime, 1000);
-        updateTime();
-
-        function unlock() {
-            document.getElementById('lock-screen').classList.add('slide-up');
-            // Show start screen on first unlock
-            if(!document.getElementById('start-screen').classList.contains('active')) {
-                toggleStart();
-            }
-        }
-        function lock() {
-            document.getElementById('lock-screen').classList.remove('slide-up');
-            document.getElementById('start-screen').classList.remove('active');
-        }
 
         // --- WINDOW MANAGER ---
         const WM = {
             zIndex: 100,
-            open: function(id, title, content) {
-                if(document.getElementById('win-'+id)) return WM.focus(id);
-                
-                // Close Start if open
-                document.getElementById('start-screen').classList.remove('active');
+            windows: {},
+            
+            create: function(id, title, content, w=800, h=600) {
+                if(document.getElementById('win-'+id)) return this.focus(id);
+                document.getElementById('start-menu').classList.remove('open');
 
                 const win = document.createElement('div');
-                win.className = 'window open';
+                win.className = 'window';
                 win.id = 'win-'+id;
-                win.style.width = '800px';
-                win.style.height = '600px';
-                win.style.left = (50 + Math.random()*50) + 'px';
-                win.style.top = (50 + Math.random()*50) + 'px';
+                win.style.width = w+'px'; win.style.height = h+'px';
+                win.style.left = (50 + Math.random()*50) + 'px'; win.style.top = (50 + Math.random()*50) + 'px';
                 win.style.zIndex = ++this.zIndex;
 
                 win.innerHTML = `
-                    <div class="win-header" onmousedown="WM.dragStart(event, '${id}')">
-                        <div class="win-title">${title}</div>
+                    <div class="title-bar" onmousedown="WM.dragStart(event, '${id}')">
+                        <div class="win-title"><i class="fa-solid fa-window-maximize"></i> ${title}</div>
                         <div class="win-controls">
-                            <div class="win-btn" onclick="WM.minimize('${id}')">_</div>
-                            <div class="win-btn" onclick="WM.maximize('${id}')">◻</div>
-                            <div class="win-btn btn-close" onclick="WM.close('${id}')">✕</div>
+                            <div class="win-btn btn-min" onclick="WM.minimize('${id}')"></div>
+                            <div class="win-btn btn-max" onclick="WM.maximize('${id}')"></div>
+                            <div class="win-btn btn-close" onclick="WM.close('${id}')"></div>
                         </div>
                     </div>
-                    <div class="win-content">${content}</div>
+                    <div class="win-body">${content}</div>
                 `;
+
+                win.addEventListener('mousedown', () => this.focus(id));
+                document.body.appendChild(win);
+                this.addTask(id);
                 
-                win.addEventListener('mousedown', () => WM.focus(id));
-                document.getElementById('desktop').appendChild(win);
-                this.addTask(id, title);
+                setTimeout(() => { win.classList.add('active'); this.focus(id); }, 10);
             },
+
             close: function(id) {
-                document.getElementById('win-'+id).remove();
-                document.getElementById('task-'+id).remove();
+                const win = document.getElementById('win-'+id);
+                win.classList.remove('active');
+                setTimeout(() => win.remove(), 200);
+                document.getElementById('task-'+id)?.remove();
             },
+
             focus: function(id) {
                 const win = document.getElementById('win-'+id);
-                if(win) win.style.zIndex = ++this.zIndex;
-                
-                document.querySelectorAll('.task-app').forEach(t => t.classList.remove('active'));
-                document.getElementById('task-'+id)?.classList.add('active');
+                if(win) {
+                    win.style.zIndex = ++this.zIndex;
+                    document.querySelectorAll('.task-item').forEach(t => t.classList.remove('active'));
+                    document.getElementById('task-'+id)?.classList.add('active');
+                }
             },
+
+            minimize: function(id) {
+                document.getElementById('win-'+id).classList.remove('active');
+                document.getElementById('task-'+id).classList.remove('active');
+            },
+
             maximize: function(id) {
                 document.getElementById('win-'+id).classList.toggle('maximized');
             },
-            minimize: function(id) {
-                document.getElementById('win-'+id).classList.remove('open');
-                document.getElementById('task-'+id).classList.remove('active');
-            },
-            addTask: function(id, title) {
-                const iconMap = {
-                    'browser': 'fa-edge',
-                    'roblox': 'fa-gamepad',
-                    'explorer': 'fa-folder',
-                    'settings': 'fa-gear',
-                    'notepad': 'fa-pen'
-                };
+
+            addTask: function(id) {
                 const task = document.createElement('div');
-                task.className = 'task-app active';
+                task.className = 'task-item active';
                 task.id = 'task-'+id;
-                task.innerHTML = `<i class="fa-brands ${iconMap[id] || 'fa-window-maximize'}"></i>`;
+                task.innerHTML = '<i class="fa-solid fa-window-maximize"></i>';
                 task.onclick = () => {
                     const win = document.getElementById('win-'+id);
-                    if(!win.classList.contains('open')) {
-                        win.classList.add('open');
-                        WM.focus(id);
-                    } else {
-                        WM.focus(id);
-                    }
+                    if(!win.classList.contains('active')) { win.classList.add('active'); this.focus(id); }
+                    else this.focus(id);
                 };
                 document.getElementById('task-list').appendChild(task);
             },
+
             dragStart: function(e, id) {
                 if(e.target.closest('.win-controls')) return;
                 const win = document.getElementById('win-'+id);
-                WM.focus(id);
+                this.focus(id);
                 let shiftX = e.clientX - win.getBoundingClientRect().left;
                 let shiftY = e.clientY - win.getBoundingClientRect().top;
                 
@@ -337,120 +435,221 @@
             }
         };
 
-        // --- APPS ---
+        // --- APPLICATIONS ---
         const Apps = {
+            playStartupSound: () => {
+                // Simulated sound
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.connect(gain); gain.connect(ctx.destination);
+                osc.type = 'sine'; osc.frequency.setValueAtTime(440, ctx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.5);
+                gain.gain.setValueAtTime(0.1, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.5);
+                osc.start(); osc.stop(ctx.currentTime + 0.5);
+            },
+
             open: function(app) {
                 switch(app) {
                     case 'browser':
-                        WM.open('browser', 'Internet', `
+                        WM.create('browser', 'Atom Net', `
                             <div style="display:flex; flex-direction:column; height:100%;">
-                                <div class="browser-bar">
-                                    <button onclick="Browser.back()">Back</button>
-                                    <button onclick="Browser.reload()">Reload</button>
-                                    <input type="text" id="url-bar" class="url-input" value="https://bing.com" onkeydown="if(event.key=='Enter') Browser.go()">
-                                    <button onclick="Browser.go()">Go</button>
+                                <div class="browser-toolbar">
+                                    <i class="fa-solid fa-arrow-left" style="color:#aaa; cursor:pointer;" onclick="Apps.browserBack()"></i>
+                                    <i class="fa-solid fa-rotate-right" style="color:#aaa; cursor:pointer;" onclick="Apps.browserReload()"></i>
+                                    <input type="text" class="browser-input" id="url-bar" value="https://bing.com" onkeydown="if(event.key=='Enter') Apps.browserGo()">
+                                    <select onchange="Apps.changeProxy(this.value)" style="background:#333; color:white; border:none; border-radius:4px; padding:5px;">
+                                        <option value="0">Proxy Node 1</option>
+                                        <option value="1">Proxy Node 2</option>
+                                        <option value="2">Proxy Node 3</option>
+                                        <option value="3">Math Cloak</option>
+                                    </select>
                                 </div>
-                                <div style="padding:5px; background:#e1e1e1; font-size:11px; display:flex; justify-content:space-between;">
-                                    <span>Proxy Mode: Auto-Detect</span>
-                                    <span style="cursor:pointer; color:blue;" onclick="Browser.tryNextProxy()">Try Next Proxy Server</span>
-                                </div>
-                                <iframe id="browser-frame" src="https://bing.com" style="flex:1; background:white;"></iframe>
+                                <iframe id="browser-frame" src="https://bing.com"></iframe>
                             </div>
-                        `);
+                        `, 900, 600);
                         break;
-                    case 'roblox':
-                         WM.open('roblox', 'Roblox', `
-                            <div style="height:100%; display:flex; flex-direction:column;">
-                                <div style="background:#000; color:white; padding:5px; font-size:12px;">Cloud Gaming Wrapper Active</div>
-                                <iframe src="https://www.easyfun.gg/games/roblox.html"></iframe>
+                    
+                    case 'arcade':
+                        WM.create('arcade', 'Truffle Arcade', `
+                            <div style="background:#111; height:100%; color:white; padding:10px; overflow-y:auto;">
+                                <h3 style="border-bottom:1px solid #333; padding-bottom:10px;">Unblocked Games</h3>
+                                <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(120px, 1fr)); gap:15px;">
+                                    ${Apps.generateGameCard('Minecraft', 'https://eaglercraft.com/mc/1.8.8/', 'https://images.unsplash.com/photo-1607677912781-a9f7d4d4206e?w=200')}
+                                    ${Apps.generateGameCard('1v1.LOL', 'https://1v1.lol', 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=200')}
+                                    ${Apps.generateGameCard('Retro Bowl', 'https://retro-bowl.github.io/retro-bowl/', 'https://images.unsplash.com/photo-1579952363873-27f3bade9f55?w=200')}
+                                    ${Apps.generateGameCard('Slope', 'https://y8.com/games/slope', 'https://images.unsplash.com/photo-1551103782-8ab07afd45c1?w=200')}
+                                </div>
                             </div>
-                         `);
-                         break;
+                        `, 800, 500);
+                        break;
+                    
+                    case 'paint':
+                        WM.create('paint', 'Canvas Paint', `
+                            <div style="display:flex; flex-direction:column; height:100%; background:white;">
+                                <div style="padding:5px; background:#eee; border-bottom:1px solid #ccc; display:flex; gap:10px;">
+                                    <input type="color" id="paint-color" value="#000000">
+                                    <input type="range" id="paint-size" min="1" max="20" value="5">
+                                    <button onclick="Apps.clearPaint()">Clear</button>
+                                </div>
+                                <canvas id="paint-canvas" style="flex:1; cursor:crosshair; touch-action:none;"></canvas>
+                            </div>
+                        `, 600, 450);
+                        setTimeout(Apps.initPaint, 100);
+                        break;
+
+                    case 'camera':
+                        WM.create('camera', 'Webcam', `
+                            <div style="background:black; height:100%; display:flex; align-items:center; justify-content:center;">
+                                <video id="cam-feed" autoplay style="max-width:100%; max-height:100%;"></video>
+                            </div>
+                        `, 500, 400);
+                        setTimeout(() => {
+                            navigator.mediaDevices.getUserMedia({video:true})
+                            .then(stream => document.getElementById('cam-feed').srcObject = stream)
+                            .catch(e => alert("Camera Access Denied or Not Found"));
+                        }, 500);
+                        break;
+                        
                     case 'explorer':
-                        let fileHtml = '';
-                        for(let f in System.data.files) {
-                            fileHtml += `<div style="padding:10px; float:left; width:80px; text-align:center; cursor:pointer;" onclick="alert('${System.data.files[f]}')">
-                                <i class="fa-solid fa-file-lines" style="font-size:30px; color:#2d89ef;"></i><br><span style="font-size:12px;">${f}</span>
-                            </div>`;
-                        }
-                        WM.open('explorer', 'File Explorer', `<div style="padding:10px;">${fileHtml}</div>`);
-                        break;
-                    case 'settings':
-                        WM.open('settings', 'PC Settings', `
-                            <div style="padding:20px;">
-                                <h2>Personalize</h2>
-                                <p>Wallpaper URL:</p>
-                                <input type="text" style="width:100%; padding:5px;" onchange="document.body.style.backgroundImage = 'url('+this.value+')'">
-                                <br><br>
-                                <button onclick="localStorage.clear(); location.reload();" style="background:red; color:white; border:none; padding:10px;">Reset PC</button>
+                        WM.create('explorer', 'File Explorer', `
+                            <div class="file-explorer">
+                                <div style="border-bottom:1px solid #444; padding-bottom:5px;">Home / User / Documents</div>
+                                <div class="file-list" id="explorer-content">
+                                    ${Object.keys(OS.user.files).map(f => `
+                                        <div class="file-item" onclick="Apps.openFile('${f}')">
+                                            <i class="fa-solid fa-file-lines" style="font-size:30px; color:#4facfe;"></i><br>${f}
+                                        </div>
+                                    `).join('')}
+                                </div>
                             </div>
-                        `);
+                        `, 600, 400);
                         break;
+
                     case 'notepad':
-                        WM.open('notepad', 'Notepad', `
-                            <textarea style="width:100%; height:100%; border:none; padding:10px; font-family:monospace; resize:none;">Type here...</textarea>
-                        `);
+                        WM.create('notepad', 'Notepad', `
+                            <div style="display:flex; flex-direction:column; height:100%;">
+                                <div style="background:#eee; padding:5px;">
+                                    <button onclick="Apps.saveFile()">Save</button>
+                                </div>
+                                <textarea id="notepad-area" style="flex:1; padding:10px; resize:none; border:none; outline:none; font-family:monospace;"></textarea>
+                            </div>
+                        `, 500, 400);
+                        break;
+
+                    case 'media':
+                        WM.create('media', 'Media Player', `
+                            <div style="padding:20px; text-align:center; color:white;">
+                                <h3>Upload MP3/MP4</h3>
+                                <input type="file" onchange="Apps.playMedia(this)" accept="audio/*,video/*">
+                                <div id="media-container" style="margin-top:20px;"></div>
+                            </div>
+                        `, 400, 300);
                         break;
                 }
-            }
-        };
+            },
 
-        // --- BROWSER LOGIC (The "Fix") ---
-        const Browser = {
-            currentProxyIndex: 0,
-            
-            go: function() {
-                const val = document.getElementById('url-bar').value;
+            // --- BROWSER LOGIC ---
+            browserGo: function() {
+                const url = document.getElementById('url-bar').value;
                 const frame = document.getElementById('browser-frame');
-                
-                // Check if user is trying a blocked site directly
-                if(val.includes('google.com') || val.includes('youtube.com')) {
-                    if(confirm("Direct access to Google/YouTube is blocked by headers. Use Proxy Mode?")) {
-                        this.loadViaProxy(val);
-                    } else {
-                        frame.src = val; // Will likely fail
+                if(url.includes('google') || url.includes('youtube')) {
+                    if(confirm("Google/YouTube block embedding. Switch to Proxy Mode?")) {
+                        // Switch to first proxy
+                        document.querySelector('select').value = 0;
+                        Apps.changeProxy(0);
                     }
-                } else if (!val.startsWith('http')) {
-                    // Search
-                    frame.src = "https://www.bing.com/search?q=" + encodeURIComponent(val);
+                } else if(!url.startsWith('http')) {
+                    frame.src = 'https://www.bing.com/search?q=' + encodeURIComponent(url);
                 } else {
-                    frame.src = val;
+                    frame.src = url;
                 }
             },
-            
-            loadViaProxy: function(url) {
-                const proxy = System.proxies[this.currentProxyIndex];
+            browserBack: () => document.getElementById('browser-frame').contentWindow.history.back(),
+            browserReload: () => document.getElementById('browser-frame').contentWindow.location.reload(),
+            changeProxy: (index) => {
                 const frame = document.getElementById('browser-frame');
-                
-                // Simple logic: Load the proxy homepage so user can surf inside it
-                // Or try to append if the proxy supports standard UV formatting (complex to guess)
-                frame.src = proxy;
-                alert("Loading via Proxy Node " + (this.currentProxyIndex+1) + ".\nType your destination INSIDE the loaded website.");
-            },
-            
-            tryNextProxy: function() {
-                this.currentProxyIndex = (this.currentProxyIndex + 1) % System.proxies.length;
-                this.loadViaProxy();
+                frame.src = OS.proxies[index];
+                document.getElementById('url-bar').value = OS.proxies[index];
             },
 
-            back: () => document.getElementById('browser-frame').contentWindow.history.back(),
-            reload: () => document.getElementById('browser-frame').contentWindow.location.reload()
+            // --- PAINT LOGIC ---
+            initPaint: function() {
+                const cvs = document.getElementById('paint-canvas');
+                if(!cvs) return;
+                const ctx = cvs.getContext('2d');
+                cvs.width = cvs.offsetWidth; cvs.height = cvs.offsetHeight;
+                
+                let painting = false;
+                cvs.onmousedown = () => painting = true;
+                cvs.onmouseup = () => { painting = false; ctx.beginPath(); };
+                cvs.onmousemove = (e) => {
+                    if(!painting) return;
+                    const rect = cvs.getBoundingClientRect();
+                    ctx.lineWidth = document.getElementById('paint-size').value;
+                    ctx.lineCap = 'round';
+                    ctx.strokeStyle = document.getElementById('paint-color').value;
+                    ctx.lineTo(e.clientX - rect.left, e.clientY - rect.top);
+                    ctx.stroke();
+                    ctx.beginPath();
+                    ctx.moveTo(e.clientX - rect.left, e.clientY - rect.top);
+                };
+            },
+            clearPaint: () => {
+                const cvs = document.getElementById('paint-canvas');
+                const ctx = cvs.getContext('2d');
+                ctx.clearRect(0,0, cvs.width, cvs.height);
+            },
+
+            // --- FILE SYSTEM LOGIC ---
+            saveFile: function() {
+                const content = document.getElementById('notepad-area').value;
+                const name = prompt("Filename:", "doc.txt");
+                if(name) {
+                    OS.user.files[name] = content;
+                    OS.save();
+                    alert("Saved!");
+                }
+            },
+            openFile: function(name) {
+                Apps.open('notepad');
+                setTimeout(() => {
+                    document.getElementById('notepad-area').value = OS.user.files[name];
+                }, 200);
+            },
+
+            // --- MEDIA LOGIC ---
+            playMedia: function(input) {
+                const file = input.files[0];
+                const url = URL.createObjectURL(file);
+                const container = document.getElementById('media-container');
+                container.innerHTML = '';
+                if(file.type.startsWith('video')) {
+                    const vid = document.createElement('video');
+                    vid.src = url; vid.controls = true; vid.style.width = '100%';
+                    container.appendChild(vid);
+                } else {
+                    const aud = document.createElement('audio');
+                    aud.src = url; aud.controls = true;
+                    container.appendChild(aud);
+                }
+            },
+
+            // --- GAME LOGIC ---
+            generateGameCard: (title, url, img) => {
+                // Returns a clickable card that opens the game in a new window
+                // Note: We use onclick attribute which calls window.open or internal WM
+                return `
+                <div style="background:#222; border-radius:8px; overflow:hidden; cursor:pointer;" onclick="WM.create('${title.replace(/\s/g,'')}', '${title}', '<iframe src=\\'${url}\\'></iframe>', 900, 600)">
+                    <img src="${img}" style="width:100%; height:80px; object-fit:cover;">
+                    <div style="padding:5px; font-size:12px; font-weight:bold;">${title}</div>
+                </div>`;
+            }
         };
 
-        // --- UI TOGGLES ---
-        function toggleStart() {
-            document.getElementById('start-screen').classList.toggle('active');
-        }
-        
-        // Charms Bar Trigger (Mouse Right Edge)
-        document.addEventListener('mousemove', (e) => {
-            const charms = document.getElementById('charms');
-            if(window.innerWidth - e.clientX < 20) {
-                charms.classList.add('show');
-            } else if (window.innerWidth - e.clientX > 120) {
-                charms.classList.remove('show');
-            }
-        });
+        // --- INIT ---
+        window.onload = () => OS.init();
 
     </script>
 </body>
