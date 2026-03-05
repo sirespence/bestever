@@ -3,260 +3,374 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Atom | Cosmic Web</title>
+    <title>ATOM | Ultimate Proxy</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* --- ATOM SPACE VARIABLES --- */
+        /* --- COSMIC VARIABLES --- */
         :root {
-            --neon-cyan: #00f3ff;
+            --neon-blue: #00f3ff;
             --neon-purple: #bc13fe;
-            --deep-space: #050a14;
-            --glass-surface: rgba(20, 30, 50, 0.65);
-            --glass-border: rgba(255, 255, 255, 0.15);
-            --gloss-overlay: linear-gradient(135deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0.05) 40%, rgba(255,255,255,0) 50%, rgba(255,255,255,0.1) 100%);
-            --font-main: 'Segoe UI', 'Frutiger', sans-serif;
+            --core-white: #ffffff;
+            --glass-bg: rgba(10, 20, 40, 0.6);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --gloss-gradient: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.05) 50%, rgba(255,255,255,0) 51%, rgba(255,255,255,0.05) 100%);
+            --font-space: 'Segoe UI', 'Roboto', sans-serif;
         }
 
         /* --- UNIVERSE RESET --- */
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: var(--font-main); }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: var(--font-space); }
 
         body {
             height: 100vh;
             overflow: hidden;
-            background: #000 url('https://images.unsplash.com/photo-1462331940025-496dfbfc7564?q=80&w=2000') no-repeat center center fixed;
-            background-size: cover;
-            color: white;
+            background: #020408; /* Deep Space Black */
             display: flex;
             align-items: center;
             justify-content: center;
+            color: white;
+            position: relative;
+        }
+
+        /* --- INTERACTIVE BACKGROUND CANVAS --- */
+        #cosmos-canvas {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 0;
+            background: radial-gradient(circle at 50% 50%, #0d1a33 0%, #000000 100%);
+        }
+
+        /* --- MAIN INTERFACE --- */
+        .interface-container {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            max-width: 800px;
+            padding: 20px;
             perspective: 1000px;
         }
 
-        /* Ambient Space Overlay (Aurora/Nebula glow) */
-        body::before {
-            content: ''; position: absolute; inset: 0;
-            background: radial-gradient(circle at 20% 80%, rgba(188, 19, 254, 0.2), transparent 50%),
-                        radial-gradient(circle at 80% 20%, rgba(0, 243, 255, 0.15), transparent 50%);
-            pointer-events: none; z-index: 1;
-        }
-
-        /* --- THE CORE (Main Container) --- */
-        .atom-container {
-            width: 100%; max-width: 750px;
-            background: var(--glass-surface);
-            backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
+        .glass-panel {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border-radius: 24px;
             border: 1px solid var(--glass-border);
-            border-top: 1px solid rgba(255,255,255,0.4);
-            border-radius: 30px;
+            border-top: 1px solid rgba(255,255,255,0.3);
+            box-shadow: 
+                0 0 50px rgba(0, 243, 255, 0.1),
+                0 20px 40px rgba(0,0,0,0.6),
+                inset 0 0 0 1px rgba(255,255,255,0.05);
             padding: 50px;
             text-align: center;
-            box-shadow: 0 40px 80px rgba(0,0,0,0.5), inset 0 0 0 1px rgba(255,255,255,0.05);
-            position: relative; z-index: 10;
-            animation: float 6s ease-in-out infinite;
+            transform-style: preserve-3d;
+            animation: floatHud 6s ease-in-out infinite;
         }
 
-        /* --- BRANDING --- */
-        .logo-wrapper { margin-bottom: 35px; position: relative; display: inline-block; }
-        
-        .atom-logo {
-            font-size: 60px; font-weight: 200; letter-spacing: -2px;
-            background: linear-gradient(to bottom, #fff, #aadaff);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            position: relative; z-index: 2;
-            text-shadow: 0 0 30px rgba(0, 243, 255, 0.3);
+        /* --- 3D ATOM LOGO --- */
+        .atom-visual {
+            position: relative;
+            width: 120px; height: 120px;
+            margin: 0 auto 20px;
+            transform-style: preserve-3d;
         }
-        .atom-logo span { font-weight: 700; color: var(--neon-cyan); }
 
-        /* The Spinning Orbit Ring */
-        .orbit-ring {
+        /* The Nucleus */
+        .nucleus {
             position: absolute; top: 50%; left: 50%;
-            width: 140px; height: 40px;
-            border: 2px solid rgba(0, 243, 255, 0.6);
+            width: 30px; height: 30px;
+            background: radial-gradient(circle at 30% 30%, #fff, var(--neon-blue));
             border-radius: 50%;
-            transform: translate(-50%, -50%) rotate(-20deg);
-            box-shadow: 0 0 15px rgba(0, 243, 255, 0.2);
-            animation: orbitSpin 8s linear infinite;
-            pointer-events: none;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 0 30px var(--neon-blue);
+            z-index: 10;
         }
-        .orbit-ring::after {
-            content: ''; position: absolute; top: 3px; left: 10px;
+
+        /* Electron Orbits */
+        .orbit {
+            position: absolute; top: 50%; left: 50%;
+            width: 100%; height: 100%;
+            border: 2px solid rgba(0, 243, 255, 0.5);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+        }
+        
+        .orbit:nth-child(1) { animation: spin1 4s linear infinite; }
+        .orbit:nth-child(2) { animation: spin2 5s linear infinite; width: 80%; height: 80%; border-color: rgba(188, 19, 254, 0.6); }
+        .orbit:nth-child(3) { animation: spin3 6s linear infinite; width: 120%; height: 120%; border-color: rgba(255, 255, 255, 0.4); }
+
+        /* Electrons */
+        .orbit::before {
+            content: ''; position: absolute; top: -4px; left: 50%;
             width: 8px; height: 8px; background: white; border-radius: 50%;
             box-shadow: 0 0 10px white;
         }
 
-        /* --- SEARCH HUD --- */
-        .search-container { position: relative; margin-bottom: 40px; group; }
-        
-        .search-bar {
-            width: 100%;
-            padding: 20px 60px 20px 25px;
-            font-size: 18px; color: white;
-            background: rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(255,255,255,0.2);
-            border-radius: 50px;
-            outline: none; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: inset 0 5px 15px rgba(0,0,0,0.2);
+        h1 {
+            font-size: 50px;
+            font-weight: 300;
+            letter-spacing: 2px;
+            margin-bottom: 5px;
+            text-shadow: 0 0 20px rgba(0, 243, 255, 0.4);
         }
-        
-        .search-bar::placeholder { color: rgba(255,255,255,0.5); }
-        
-        .search-bar:focus {
-            background: rgba(0, 0, 0, 0.5);
-            border-color: var(--neon-cyan);
-            box-shadow: 0 0 25px rgba(0, 243, 255, 0.2), inset 0 2px 10px rgba(0,0,0,0.3);
+        h1 b { font-weight: 800; color: var(--neon-blue); }
+
+        .tagline {
+            color: #aaa; font-size: 14px; letter-spacing: 1px; margin-bottom: 40px;
+            text-transform: uppercase;
         }
 
-        .go-btn {
-            position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
-            width: 48px; height: 48px;
+        /* --- SEARCH INPUT --- */
+        .search-wrapper {
+            position: relative;
+            max-width: 600px;
+            margin: 0 auto 40px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 18px 60px 18px 25px;
+            border-radius: 50px;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: white; font-size: 16px;
+            transition: all 0.3s ease;
+            box-shadow: inset 0 5px 10px rgba(0,0,0,0.3);
+            backdrop-filter: blur(5px);
+        }
+
+        .search-input:focus {
+            outline: none;
+            background: rgba(0, 0, 0, 0.7);
+            border-color: var(--neon-blue);
+            box-shadow: 0 0 25px rgba(0, 243, 255, 0.2), inset 0 2px 5px rgba(0,0,0,0.5);
+            transform: scale(1.02);
+        }
+
+        .search-btn {
+            position: absolute; right: 5px; top: 50%; transform: translateY(-50%);
+            width: 46px; height: 46px;
             border-radius: 50%; border: none;
-            background: linear-gradient(180deg, #00f3ff, #0078d7);
+            background: linear-gradient(180deg, var(--neon-blue), #0078d7);
             color: white; font-size: 18px; cursor: pointer;
             box-shadow: 0 0 15px rgba(0, 243, 255, 0.4);
             transition: 0.3s;
-            overflow: hidden;
         }
-        /* Button Gloss */
-        .go-btn::before {
-            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 50%;
-            background: linear-gradient(to bottom, rgba(255,255,255,0.8), rgba(255,255,255,0));
-            opacity: 0.6;
-        }
-        .go-btn:hover { transform: translateY(-50%) scale(1.1); filter: brightness(1.2); }
+        .search-btn:hover { filter: brightness(1.2); transform: translateY(-50%) rotate(90deg); }
 
-        /* --- APP GRID --- */
-        .app-dock {
-            display: flex; justify-content: center; gap: 25px; flex-wrap: wrap;
+        /* --- HOLOGRAPHIC GRID --- */
+        .app-grid {
+            display: flex; justify-content: center; gap: 20px; flex-wrap: wrap;
         }
 
-        .app-item {
+        .app-card {
+            width: 80px;
             display: flex; flex-direction: column; align-items: center; gap: 10px;
-            cursor: pointer; transition: 0.3s;
+            cursor: pointer;
+            transition: 0.3s;
         }
-        .app-item:hover { transform: translateY(-8px); }
         
-        .icon-glass {
-            width: 64px; height: 64px;
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            border-radius: 16px;
+        .icon-sphere {
+            width: 60px; height: 60px;
+            background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.2), rgba(255,255,255,0.05));
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
             display: flex; align-items: center; justify-content: center;
-            font-size: 28px; color: white;
+            font-size: 24px; color: white;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3), inset 0 0 20px rgba(255,255,255,0.1);
             position: relative; overflow: hidden;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
-        }
-        
-        /* The "Frutiger" Shine */
-        .icon-glass::after {
-            content: ''; position: absolute; inset: 0;
-            background: var(--gloss-overlay);
+            transition: 0.3s;
         }
 
-        .app-name { font-size: 13px; font-weight: 500; letter-spacing: 0.5px; opacity: 0.8; text-shadow: 0 2px 4px rgba(0,0,0,0.8); }
+        .icon-sphere::after {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 50%;
+            background: linear-gradient(to bottom, rgba(255,255,255,0.8), transparent);
+            opacity: 0.3; border-radius: 50% 50% 0 0;
+        }
 
-        /* Icon Specifics */
-        .app-item:hover .icon-glass { border-color: var(--neon-cyan); box-shadow: 0 0 20px var(--neon-cyan); }
+        .app-card:hover .icon-sphere {
+            transform: translateY(-5px) scale(1.1);
+            border-color: var(--neon-blue);
+            box-shadow: 0 0 25px var(--neon-blue);
+            background: rgba(0, 243, 255, 0.1);
+        }
+
+        .app-name { font-size: 12px; opacity: 0.7; font-weight: 600; text-shadow: 0 2px 4px black; }
+
+        /* --- KEYFRAMES --- */
+        @keyframes floatHud { 0%,100%{transform:translateY(0) rotateX(0);} 50%{transform:translateY(-10px) rotateX(1deg);} }
+        @keyframes spin1 { 0%{transform:translate(-50%,-50%) rotateX(70deg) rotateZ(0deg);} 100%{transform:translate(-50%,-50%) rotateX(70deg) rotateZ(360deg);} }
+        @keyframes spin2 { 0%{transform:translate(-50%,-50%) rotateX(-60deg) rotateZ(0deg);} 100%{transform:translate(-50%,-50%) rotateX(-60deg) rotateZ(360deg);} }
+        @keyframes spin3 { 0%{transform:translate(-50%,-50%) rotateY(80deg) rotateZ(0deg);} 100%{transform:translate(-50%,-50%) rotateY(80deg) rotateZ(360deg);} }
+
+        /* Specific Colors */
+        .fa-youtube { color: #ff5555; }
         .fa-discord { color: #5865F2; }
-        .fa-youtube { color: #ff4444; }
-        .fa-tiktok { color: #fe2c55; } /* Text shadow handles the white part */
-        .fa-google { color: #4285F4; }
-
-        /* --- STATUS BAR --- */
-        .status-bar {
-            margin-top: 40px; padding-top: 20px;
-            border-top: 1px solid rgba(255,255,255,0.1);
-            display: flex; justify-content: space-between; align-items: center;
-            font-size: 12px; color: rgba(255,255,255,0.5);
-        }
-        .status-pill {
-            background: rgba(0, 255, 0, 0.1); border: 1px solid rgba(0, 255, 0, 0.3);
-            padding: 4px 12px; border-radius: 20px; color: #4aff4a;
-            display: flex; align-items: center; gap: 6px;
-        }
-        .blink { width: 6px; height: 6px; background: #4aff4a; border-radius: 50%; animation: blink 2s infinite; }
-
-        /* --- ANIMATIONS --- */
-        @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-15px); } }
-        @keyframes orbitSpin { from { transform: translate(-50%, -50%) rotate(0deg); } to { transform: translate(-50%, -50%) rotate(360deg); } }
-        @keyframes blink { 0%, 100% { opacity: 1; box-shadow: 0 0 5px #4aff4a; } 50% { opacity: 0.4; } }
+        .fa-gamepad { color: #bc13fe; }
+        .fa-tiktok { color: white; text-shadow: 2px 2px 0 #ff0050, -2px -2px 0 #00f2ea; }
 
     </style>
 </head>
 <body>
 
-    <div class="atom-container">
-        <!-- Logo -->
-        <div class="logo-wrapper">
-            <div class="orbit-ring"></div>
-            <div class="atom-logo">Atom<span>OS</span></div>
-        </div>
+    <!-- 1. DYNAMIC BACKGROUND CANVAS -->
+    <canvas id="cosmos-canvas"></canvas>
 
-        <!-- Search / Proxy Input -->
-        <form id="proxy-form" class="search-container">
-            <input type="text" class="search-bar" id="uv-address" placeholder="Enter URL or Search Query..." autocomplete="off">
-            <button type="submit" class="go-btn"><i class="fa-solid fa-rocket"></i></button>
-        </form>
+    <!-- 2. MAIN UI -->
+    <div class="interface-container">
+        <div class="glass-panel">
+            
+            <!-- 3D Logo -->
+            <div class="atom-visual">
+                <div class="nucleus"></div>
+                <div class="orbit"></div>
+                <div class="orbit"></div>
+                <div class="orbit"></div>
+            </div>
 
-        <!-- Quick Launch -->
-        <div class="app-dock">
-            <div class="app-item" onclick="launch('https://discord.com')">
-                <div class="icon-glass"><i class="fa-brands fa-discord"></i></div>
-                <div class="app-name">Discord</div>
-            </div>
-            <div class="app-item" onclick="launch('https://youtube.com')">
-                <div class="icon-glass"><i class="fa-brands fa-youtube"></i></div>
-                <div class="app-name">YouTube</div>
-            </div>
-            <div class="app-item" onclick="launch('https://tiktok.com')">
-                <div class="icon-glass"><i class="fa-brands fa-tiktok"></i></div>
-                <div class="app-name">TikTok</div>
-            </div>
-            <div class="app-item" onclick="launch('https://google.com')">
-                <div class="icon-glass"><i class="fa-brands fa-google"></i></div>
-                <div class="app-name">Google</div>
-            </div>
-            <div class="app-item" onclick="launch('https://now.gg')">
-                <div class="icon-glass"><i class="fa-solid fa-gamepad" style="color:var(--neon-purple)"></i></div>
-                <div class="app-name">Now.gg</div>
-            </div>
-        </div>
+            <h1>ATOM <b>OS</b></h1>
+            <div class="tagline">Molecular Web Gateway</div>
 
-        <!-- Footer Info -->
-        <div class="status-bar">
-            <div class="status-pill"><div class="blink"></div> Systems Nominal</div>
-            <div>Ultraviolet v2.0 // Vercel Secure</div>
+            <!-- Search Form -->
+            <form id="proxy-form" class="search-wrapper">
+                <input type="text" class="search-input" id="uv-address" placeholder="Search the Cosmos or type a URL..." autocomplete="off">
+                <button type="submit" class="search-btn">
+                    <i class="fa-solid fa-atom"></i>
+                </button>
+            </form>
+
+            <!-- App Grid (Replaced now.gg with CrazyGames) -->
+            <div class="app-grid">
+                <div class="app-card" onclick="launch('https://discord.com')">
+                    <div class="icon-sphere"><i class="fa-brands fa-discord"></i></div>
+                    <span class="app-name">Discord</span>
+                </div>
+                <div class="app-card" onclick="launch('https://youtube.com')">
+                    <div class="icon-sphere"><i class="fa-brands fa-youtube"></i></div>
+                    <span class="app-name">YouTube</span>
+                </div>
+                <div class="app-card" onclick="launch('https://crazygames.com')">
+                    <div class="icon-sphere"><i class="fa-solid fa-gamepad"></i></div>
+                    <span class="app-name">CrazyGames</span>
+                </div>
+                <div class="app-card" onclick="launch('https://tiktok.com')">
+                    <div class="icon-sphere"><i class="fa-brands fa-tiktok"></i></div>
+                    <span class="app-name">TikTok</span>
+                </div>
+                <div class="app-card" onclick="launch('https://reddit.com')">
+                    <div class="icon-sphere"><i class="fa-brands fa-reddit-alien"></i></div>
+                    <span class="app-name">Reddit</span>
+                </div>
+            </div>
+
         </div>
     </div>
 
     <!-- 
-       === ULTRAVIOLET SCRIPTS ===
-       Ensure the 'uv' folder exists in your Vercel public/root directory 
+       === ULTRAVIOLET / VERCEL CONFIGURATION === 
+       Ensure your project has the 'public/uv' folder with uv.bundle.js, uv.config.js, etc.
     -->
     <script src="uv/uv.bundle.js"></script>
     <script src="uv/uv.config.js"></script>
 
     <script>
+        // --- 1. COSMIC BACKGROUND ANIMATION ---
+        const canvas = document.getElementById('cosmos-canvas');
+        const ctx = canvas.getContext('2d');
+        let width, height;
+        let particles = [];
+
+        // Resize Canvas
+        function resize() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+        // Particle Class (Atoms/Stars)
+        class Particle {
+            constructor() {
+                this.x = Math.random() * width;
+                this.y = Math.random() * height;
+                this.vx = (Math.random() - 0.5) * 0.5; // Slow movement
+                this.vy = (Math.random() - 0.5) * 0.5;
+                this.size = Math.random() * 2 + 0.5;
+                this.color = Math.random() > 0.9 ? '#00f3ff' : '#ffffff'; // Occasional blue atoms
+            }
+
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+
+                // Wrap around screen
+                if (this.x < 0) this.x = width;
+                if (this.x > width) this.x = 0;
+                if (this.y < 0) this.y = height;
+                if (this.y > height) this.y = 0;
+            }
+
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                ctx.fill();
+            }
+        }
+
+        // Initialize Particles
+        for (let i = 0; i < 100; i++) {
+            particles.push(new Particle());
+        }
+
+        // Animation Loop
+        function animate() {
+            ctx.clearRect(0, 0, width, height);
+            
+            // Update and draw particles
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+
+            // Draw "Molecular Bonds" (Lines between close particles)
+            for (let i = 0; i < particles.length; i++) {
+                for (let j = i + 1; j < particles.length; j++) {
+                    const dx = particles[i].x - particles[j].x;
+                    const dy = particles[i].y - particles[j].y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+
+                    if (distance < 100) {
+                        ctx.beginPath();
+                        ctx.strokeStyle = `rgba(0, 243, 255, ${1 - distance / 100})`; // Fade out line
+                        ctx.lineWidth = 0.5;
+                        ctx.moveTo(particles[i].x, particles[i].y);
+                        ctx.lineTo(particles[j].x, particles[j].y);
+                        ctx.stroke();
+                    }
+                }
+            }
+
+            requestAnimationFrame(animate);
+        }
+        animate();
+
+
+        // --- 2. PROXY LOGIC (ULTRAVIOLET) ---
         const form = document.getElementById('proxy-form');
         const input = document.getElementById('uv-address');
 
-        // Check if UV is loaded
-        const isUVLoaded = () => typeof Ultraviolet !== 'undefined';
-
         async function registerSW() {
-            if (!navigator.serviceWorker) {
-                throw new Error("Service Workers are not supported.");
-            }
-            await navigator.serviceWorker.register('/uv/sw.js', {
-                scope: __uv$config.prefix
-            });
+            if (!navigator.serviceWorker) throw new Error("Service Worker not supported.");
+            await navigator.serviceWorker.register('/uv/sw.js', { scope: __uv$config.prefix });
         }
 
         async function launch(url) {
-            // Visual feedback
-            input.placeholder = "Initiating connection...";
+            // UI Feedback
+            input.value = "Establishing Molecular Link...";
             
-            if(!isUVLoaded()) {
-                console.warn("UV Scripts missing. Redirecting normally for demo.");
+            // Check for UV
+            if (typeof Ultraviolet === 'undefined') {
+                console.warn("UV scripts missing. Redirecting normally for demo.");
                 window.location.href = url;
                 return;
             }
@@ -271,7 +385,6 @@
             if (!isUrl(processedUrl)) processedUrl = 'https://www.google.com/search?q=' + processedUrl;
             else if (!(processedUrl.startsWith('http://') || processedUrl.startsWith('https://'))) processedUrl = 'http://' + processedUrl;
 
-            // Redirect via UV
             window.location.href = __uv$config.prefix + __uv$config.encodeUrl(processedUrl);
         }
 
@@ -281,8 +394,7 @@
         });
 
         function isUrl(val = '') {
-            if (/^http(s?):\/\//.test(val) || val.includes('.') && val.substr(0, 1) !== ' ') return true;
-            return false;
+            return /^http(s?):\/\//.test(val) || (val.includes('.') && val.substr(0, 1) !== ' ');
         }
     </script>
 </body>
