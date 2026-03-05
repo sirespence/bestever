@@ -1,89 +1,207 @@
-/* we’re going dark mode or we’re going home */
-body {
-    background: radial-gradient(circle at center, #1a0b2e 0%, #050208 100%);
-    color: #fff;
-    font-family: 'Orbitron', sans-serif;
-    margin: 0;
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    overflow: hidden;
-}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ATOM | stargazing 🚀</title>
+    
+    <script src="/uv/uv.bundle.js"></script>
+    <script src="/uv/uv.config.js"></script>
+    <script>
+        if ("serviceWorker" in navigator) {
+            window.addEventListener("load", () => {
+                navigator.serviceWorker.register("/uv/sw.js", {
+                    scope: __uv$config.prefix,
+                });
+            });
+        }
+    </script>
 
-.main-container {
-    width: 90%;
-    max-width: 1000px;
-    text-align: center;
-}
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&family=Syncopate:wght@700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #7000ff; /* deep cosmic purple */
+            --secondary: #00ffff; /* electric cyan */
+            --accent: #ff00ff; /* neon magenta */
+            --bg: #050208;
+        }
 
-.logo {
-    font-size: 3rem;
-    letter-spacing: 10px;
-    background: linear-gradient(to right, #ff00ff, #7000ff, #00ffff);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    text-shadow: 0 0 20px rgba(112, 0, 255, 0.5);
-    margin-bottom: 20px;
-    animation: pulse 2s infinite alternate;
-}
+        * {
+            box-sizing: border-box;
+            cursor: crosshair; /* because we're fancy like that */
+        }
 
-.input-group {
-    margin-bottom: 30px;
-    display: flex;
-    gap: 10px;
-    background: rgba(255, 255, 255, 0.05);
-    padding: 10px;
-    border-radius: 50px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
-}
+        body {
+            background: radial-gradient(circle at center, #1a0b2e 0%, var(--bg) 100%);
+            color: #fff;
+            font-family: 'Orbitron', sans-serif;
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow: hidden;
+        }
 
-input {
-    flex: 1;
-    background: transparent;
-    border: none;
-    outline: none;
-    color: #00ffff;
-    padding: 10px 20px;
-    font-size: 1rem;
-}
+        .container {
+            width: 90%;
+            max-width: 1100px;
+            margin-top: 5vh;
+            text-align: center;
+            z-index: 10;
+        }
 
-button {
-    background: #7000ff;
-    border: none;
-    padding: 10px 25px;
-    border-radius: 30px;
-    color: white;
-    font-weight: bold;
-    cursor: pointer;
-    transition: 0.3s;
-    box-shadow: 0 0 10px #7000ff;
-}
+        /* the ATOM logo with a radioactive pulse */
+        .logo {
+            font-family: 'Syncopate', sans-serif;
+            font-size: 4rem;
+            letter-spacing: 15px;
+            margin: 0;
+            background: linear-gradient(to bottom, #fff, var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 15px rgba(0, 255, 255, 0.4));
+            animation: glow 3s infinite alternate;
+        }
 
-button:hover {
-    background: #ff00ff;
-    box-shadow: 0 0 20px #ff00ff;
-    transform: scale(1.05);
-}
+        @keyframes glow {
+            from { filter: drop-shadow(0 0 5px var(--secondary)); }
+            to { filter: drop-shadow(0 0 25px var(--primary)); }
+        }
 
-.iframe-wrapper {
-    position: relative;
-    border-radius: 20px;
-    overflow: hidden;
-    border: 2px solid #7000ff;
-    box-shadow: 0 0 30px rgba(112, 0, 255, 0.3);
-    height: 60vh;
-}
+        .search-area {
+            margin-top: 30px;
+            display: flex;
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            padding: 8px;
+            border-radius: 100px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            transition: 0.4s;
+        }
 
-.iframeWindow {
-    width: 100%;
-    height: 100%;
-    border: none;
-    background: #fff; /* white so you can actually see the sites lol */
-}
+        .search-area:focus-within {
+            border-color: var(--secondary);
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.2);
+        }
 
-@keyframes pulse {
-    from { transform: scale(1); opacity: 0.8; }
-    to { transform: scale(1.02); opacity: 1; }
-}
+        input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: var(--secondary);
+            padding: 15px 25px;
+            font-size: 1.1rem;
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        button {
+            background: var(--primary);
+            border: none;
+            padding: 0 35px;
+            border-radius: 100px;
+            color: white;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        button:hover {
+            background: var(--accent);
+            transform: scale(1.05) rotate(-2deg);
+            box-shadow: 0 0 20px var(--accent);
+        }
+
+        /* the frame window where the magic happens */
+        .viewport {
+            margin-top: 40px;
+            width: 100%;
+            height: 65vh;
+            background: #000;
+            border-radius: 20px;
+            border: 2px solid rgba(112, 0, 255, 0.3);
+            overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
+        }
+
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            background: #fff;
+        }
+
+        /* tiny floating atoms for decoration */
+        .decor {
+            position: absolute;
+            color: var(--primary);
+            opacity: 0.2;
+            z-index: 1;
+            font-size: 2rem;
+            animation: drift 10s infinite linear;
+        }
+
+        @keyframes drift {
+            from { transform: translateY(0) rotate(0deg); }
+            to { transform: translateY(-100vh) rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="decor" style="left: 10%; bottom: -10%;">⚛️</div>
+    <div class="decor" style="right: 15%; bottom: -20%; animation-delay: 2s;">⚛️</div>
+    <div class="decor" style="left: 40%; bottom: -15%; animation-delay: 5s;">⚛️</div>
+
+    <div class="container">
+        <h1 class="logo">ATOM</h1>
+        
+        <div class="search-area">
+            <input type="text" id="urlInput" placeholder="split the atom... (enter URL or search)">
+            <button id="searchButton">LAUNCH</button>
+        </div>
+
+        <div class="viewport">
+            <iframe id="iframeWindow"></iframe>
+        </div>
+    </div>
+
+    <script>
+        const input = document.getElementById("urlInput");
+        const btn = document.getElementById("searchButton");
+        const frame = document.getElementById("iframeWindow");
+
+        // handling the "enter" key vibe check
+        input.addEventListener("keydown", (e) => {
+            if (e.key === "Enter") {
+                e.preventDefault();
+                btn.click();
+            }
+        });
+
+        btn.onclick = (e) => {
+            e.preventDefault();
+            let val = input.value.trim();
+            if (!val) return;
+
+            let targetUrl;
+
+            // google it if there's no dot
+            if (!val.includes(".")) {
+                targetUrl = `https://www.google.com/search?q=${encodeURIComponent(val)}`;
+            } else {
+                // autofix https
+                targetUrl = val.match(/^https?:\/\//) ? val : `https://${val}`;
+            }
+
+            // launch via UV proxy
+            frame.src = __uv$config.prefix + __uv$config.encodeUrl(targetUrl);
+            console.log("⚛️ ATOM split! heading to:", targetUrl);
+        };
+    </script>
+</body>
+</html>
